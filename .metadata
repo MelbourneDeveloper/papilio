@@ -1,0 +1,5 @@
+version:
+  revision: cd41fdd495f6944ecd3506c21e94c6567b073278
+  channel: stable
+
+project_type: package
