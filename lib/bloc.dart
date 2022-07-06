@@ -2,6 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+///Resend the current state to trigger a rebuild. This is the
+///equivalent of setState
+@immutable
+class RebuildEvent extends BlocEvent {}
+
 ///Business Logic Component
 class Bloc<T> {
   ///The current state of the bloc
@@ -16,11 +21,9 @@ class Bloc<T> {
 
   ///Async handlers as a map by type
   late final Map<
-          Type,
-          Future<T> Function(
-              T Function() state, Object, Function(T) updateState,
-          Object? pageScope)>
-      _handlersByEvent;
+      Type,
+      Future<T> Function(T Function() state, Object, Function(T) updateState,
+          Object? pageScope)> _handlersByEvent;
 
   ///The initial state of the bloc
   final T initialState;
@@ -69,7 +72,9 @@ class Bloc<T> {
 
   ///Send a synchronous event to the bloc
   T addEventSync<Tb extends BlocEvent>(Tb event) {
-    _state = _executeHandlerSync(_state, event);
+    if (event is! RebuildEvent) {
+      _state = _executeHandlerSync(_state, event);
+    }
     _streamController.sink.add(Snapshot(_state, addEvent, addEventSync));
     return _state;
   }
