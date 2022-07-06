@@ -123,14 +123,13 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   @override
   Widget build(BuildContext context) => Navigator(
         key: navigatorKey,
-        //TODO: Put the stack of pages here
         pages: pages,
         onPopPage: (route, result) {
           if (!route.didPop(result)) {
             return false;
           }
 
-          notifyListeners();
+          pop();
 
           return true;
         },
