@@ -379,7 +379,6 @@ analyzer:
     null_check_always_fails: error
     unused_element: error
     must_be_immutable: error
-    deprecated_member_use: error
     unnecessary_type_check: error
     invalid_use_of_protected_member: error
     unnecessary_null_comparison: error
@@ -387,6 +386,10 @@ analyzer:
     invalid_null_aware_operator: error
     missing_enum_constant_in_switch: error
     subtype_of_sealed_class: error
+
+#Like this:
+#dart run dart_code_metrics:metrics check-unused-code lib
+#dart run dart_code_metrics:metrics analyze lib
 
 dart_code_metrics:
   anti-patterns:
@@ -398,16 +401,24 @@ dart_code_metrics:
     number-of-parameters: 4
     source-lines-of-code: 50
     weight-of-class: 0.33
+    halstead-volume: 150
   metrics-exclude:
     - test/**
   rules:
-    #- newline-before-return
-    - no-boolean-literal-compare
-    #- no-empty-block
-    #- prefer-trailing-comma
-    - prefer-conditional-expressions
-    - no-equal-then-else
     - avoid_restricted_imports
     - avoid-global-state
     - avoid-ignoring-return-values
     - avoid-late-keyword
+    - avoid-unused-parameters
+    - format-comment
+    - member-ordering-extended
+    - newline-before-return
+    - no-boolean-literal-compare
+    - no-empty-block
+    - no-equal-then-else
+    - no-equal-arguments
+    - no-magic-number
+    - prefer-async-await
+    - prefer-immediate-return
+    - prefer-trailing-comma
+    - prefer-conditional-expressions

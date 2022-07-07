@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:ioc_container/ioc_container.dart';
 import 'package:papilio/bloc.dart';
+import 'package:papilio/page_args.dart';
 import 'package:papilio/page_builder.dart';
 import 'package:papilio/papilio_router_delegate.dart';
 
@@ -26,14 +27,20 @@ class PapilioRouterDelegateBuilder<T> {
       required void Function(
               BlocBuilder<TBloc> blocBuilder, IocContainer container)
           buildBloc,
-      bool Function(Object? pageScope)? onPop,
+      final bool Function(
+        Route<dynamic> route,
+        // ignore: avoid_annotating_with_dynamic
+        dynamic result,
+        PageArgs pageArgs,
+      )?
+          onPopPage,
       BlocEvent? initialEvent}) {
     _addPage(
         name,
         PageBuilder(
             initialEvent: initialEvent,
             builder: pageBody,
-            onPop: onPop,
+            onPopPage: onPopPage,
             blocBuilder: () {
               final blocBuilder = BlocBuilder<TBloc>(initialState);
               buildBloc(blocBuilder, container);

@@ -4,15 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:papilio/bloc.dart';
 import 'package:papilio/page_args.dart';
 import 'package:papilio/page_builder.dart';
+import 'package:papilio/papilio_route.dart';
 
 import 'package:papilio/state_holder.dart';
 
 class _Stack<E> {
   final list = <E>[];
-
-  void push(E value) => list.add(value);
-
-  E pop() => list.removeLast();
 
   E get peek => list.last;
 
@@ -20,6 +17,10 @@ class _Stack<E> {
 
   bool get isEmpty => list.isEmpty;
   bool get isNotEmpty => list.isNotEmpty;
+
+  void push(E value) => list.add(value);
+
+  E pop() => list.removeLast();
 
   @override
   String toString() => list.toString();
@@ -37,33 +38,68 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   final Map<String, PageBuilder> _pageBuildersByKey;
 
   final Future<void> Function(
-      PapilioRouterDelegate<T> delegate, T configuration) _setNewRoutePath;
+    PapilioRouterDelegate<T> delegate,
+    T configuration,
+  ) _setNewRoutePath;
 
   @override
   final GlobalKey<NavigatorState> navigatorKey;
 
-  PapilioRouterDelegate(this._pageBuildersByKey, this._setNewRoutePath,
-      this.getCurrentConfiguration)
-      : navigatorKey = GlobalKey<NavigatorState>();
+  PapilioRouterDelegate(
+    this._pageBuildersByKey,
+    this._setNewRoutePath,
+    this.getCurrentConfiguration,
+  ) : navigatorKey = GlobalKey<NavigatorState>();
 
-  void pop() {
+  @override
+  T get currentConfiguration => _pageStack.isNotEmpty
+      ? getCurrentConfiguration(_pageStack.peek)
+      : throw Exception(
+          "There are currently no pages. This probably happened because you "
+          "didn't navigate to a page onInit. "
+          "Call delegate.navigate in the body "
+          "of onInit in PapilioRoutingConfiguration");
+
+  List<Page<dynamic>> get pages => _pageStack.list.toList();
+
+  ///Pops the current page from the stack and returns the result of the pop.
+  ///The page's onPopPage callback will fire when this happens.
+  bool pop({
+    Route? route,
+    // ignore: avoid_annotating_with_dynamic
+    dynamic result,
+    PageArgs? pageArgs,
+    PageBuilder? pageBuilder,
+  }) {
     if (_pageStack.length < 2) {
-      return;
+      return false;
     }
 
-    final materialPage = _pageStack.peek;
-    final pageArgs = materialPage.arguments! as PageArgs;
-    final materialPageBuilder = _pageBuildersByKey[pageArgs.key.value]!;
-    if (materialPageBuilder.onPop != null) {
-      //TODO: Put tests around this
-      final pop = materialPageBuilder.onPop!(pageArgs.pageScope);
-      if (!pop) {
-        return;
-      }
+    var pop = false;
+
+    if (route == null) {
+      final materialPage = _pageStack.peek;
+      final pageArgsFromStack = materialPage.arguments! as PageArgs;
+      final pageBuilderFromStack =
+          _pageBuildersByKey[pageArgsFromStack.key.value];
+      pop = pageBuilderFromStack!.onPopPage(
+          PapilioRoute(
+              settings:
+                  RouteSettings(name: materialPage.name, arguments: pageArgs)),
+          null,
+          pageArgsFromStack);
+    } else {
+      pop = pageBuilder!.onPopPage(route, result, pageArgs!);
+    }
+
+    if (!pop) {
+      return false;
     }
 
     _pageStack.pop();
     notifyListeners();
+
+    return pop;
   }
 
   void navigate<TState>(ValueKey<String> key,
@@ -105,34 +141,19 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   }
 
   @override
-  T get currentConfiguration => getCurrentConfiguration(_pageStack.peek);
-
-  List<Page<dynamic>> get pages {
-    if (_pageStack.length == 0) {
-      return [
-        const MaterialPage(
-            child: CircularProgressIndicator.adaptive(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-        ))
-      ];
-    }
-
-    return _pageStack.list.toList();
-  }
-
-  @override
   Widget build(BuildContext context) => Navigator(
         key: navigatorKey,
-        //TODO: Put the stack of pages here
         pages: pages,
         onPopPage: (route, result) {
-          if (!route.didPop(result)) {
-            return false;
-          }
+          final materialPage = route.settings;
+          final pageArgs = materialPage.arguments! as PageArgs;
+          final materialPageBuilder = _pageBuildersByKey[pageArgs.key.value]!;
 
-          notifyListeners();
-
-          return true;
+          return pop(
+              route: route,
+              result: result,
+              pageArgs: pageArgs,
+              pageBuilder: materialPageBuilder);
         },
       );
 

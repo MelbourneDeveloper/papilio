@@ -14,6 +14,7 @@ dependencies:
   ioc_container: ^0.6.0
 
 dev_dependencies:
+  dart_code_metrics: ^4.16.0
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter

@@ -10,17 +10,17 @@ class RebuildEvent extends BlocEvent {}
 ///Business Logic Component
 class Bloc<T> {
   ///The current state of the bloc
-  late T _state;
+  T _state;
 
   //the controller for the state stream
   final StreamController<Snapshot<T>> _streamController =
       StreamController<Snapshot<T>>.broadcast();
 
   ///Sync handlers as a map by type
-  late final Map<Type, T Function(T state, Object event)> _syncHandlersByEvent;
+  final Map<Type, T Function(T state, Object event)> _syncHandlersByEvent;
 
   ///Async handlers as a map by type
-  late final Map<
+  final Map<
       Type,
       Future<T> Function(T Function() state, Object, Function(T) updateState,
           Object? pageScope)> _handlersByEvent;
@@ -32,32 +32,10 @@ class Bloc<T> {
   final Object? pageScope;
 
   Bloc(this.initialState, this._handlersByEvent, this._syncHandlersByEvent,
-      {this.pageScope}) {
-    _state = initialState;
-  }
+      {this.pageScope})
+      : _state = initialState;
 
-  void _updateState(T state) {
-    _state = state;
-    _streamController.sink.add(Snapshot(state, addEvent, addEventSync));
-  }
-
-  T _executeHandlerSync(T state, BlocEvent event) {
-    if (_syncHandlersByEvent.containsKey(event.runtimeType)) {
-      return _syncHandlersByEvent[event.runtimeType]!(state, event);
-    }
-    throw UnsupportedError(unhandledErrorMessage(event));
-  }
-
-  Future<T> _executeHandler(
-      T Function() getState, BlocEvent event, Function(T) updateState) {
-    if (_handlersByEvent.containsKey(event.runtimeType)) {
-      return _handlersByEvent[event.runtimeType]!(
-          () => _state, event, updateState, pageScope);
-    }
-    throw UnsupportedError(unhandledErrorMessage(event));
-  }
-
-  String unhandledErrorMessage(BlocEvent event) =>
+  String _unhandledErrorMessage(BlocEvent event) =>
       'There is no handler for the type ${event.runtimeType}';
 
   ///The stream of state updates. Listen to this with a StreamBuilder<T>
@@ -83,6 +61,27 @@ class Bloc<T> {
   void dispose() {
     _streamController.close();
   }
+
+  void _updateState(T state) {
+    _state = state;
+    _streamController.sink.add(Snapshot(state, addEvent, addEventSync));
+  }
+
+  T _executeHandlerSync(T state, BlocEvent event) {
+    if (_syncHandlersByEvent.containsKey(event.runtimeType)) {
+      return _syncHandlersByEvent[event.runtimeType]!(state, event);
+    }
+    throw UnsupportedError(_unhandledErrorMessage(event));
+  }
+
+  Future<T> _executeHandler(
+      T Function() getState, BlocEvent event, Function(T) updateState) {
+    if (_handlersByEvent.containsKey(event.runtimeType)) {
+      return _handlersByEvent[event.runtimeType]!(
+          () => _state, event, updateState, pageScope);
+    }
+    throw UnsupportedError(_unhandledErrorMessage(event));
+  }
 }
 
 ///A snapshot of the state from the stream with the ability to send events to
@@ -105,10 +104,10 @@ class BlocBuilder<T> {
   final T Function(Object? arguments) initialState;
 
   ///Sync handlers as a map by type
-  late final Map<Type, T Function(T, Object)> _syncHandlersByEvent = {};
+  final Map<Type, T Function(T, Object)> _syncHandlersByEvent = {};
 
   ///Async handlers as a map by type
-  late final Map<
+  final Map<
       Type,
       Future<T> Function(
           T Function() state,
