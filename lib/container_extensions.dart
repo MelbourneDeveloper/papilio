@@ -10,6 +10,7 @@ extension ContainerBuilderExtensions on IocContainerBuilder {
     PapilioRoutingConfiguration<T> Function(IocContainer container)
         getRoutingFunctions,
   ) {
+    //TODO: Avoid using late here. This code is a bit stinky
     late final PapilioRoutingConfiguration<T> routingFunctions;
 
     addSingleton((container) {

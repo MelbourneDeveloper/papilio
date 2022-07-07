@@ -10,17 +10,17 @@ class RebuildEvent extends BlocEvent {}
 ///Business Logic Component
 class Bloc<T> {
   ///The current state of the bloc
-  late T _state;
+  T _state;
 
   //the controller for the state stream
   final StreamController<Snapshot<T>> _streamController =
       StreamController<Snapshot<T>>.broadcast();
 
   ///Sync handlers as a map by type
-  late final Map<Type, T Function(T state, Object event)> _syncHandlersByEvent;
+  final Map<Type, T Function(T state, Object event)> _syncHandlersByEvent;
 
   ///Async handlers as a map by type
-  late final Map<
+  final Map<
       Type,
       Future<T> Function(T Function() state, Object, Function(T) updateState,
           Object? pageScope)> _handlersByEvent;
@@ -32,9 +32,8 @@ class Bloc<T> {
   final Object? pageScope;
 
   Bloc(this.initialState, this._handlersByEvent, this._syncHandlersByEvent,
-      {this.pageScope}) {
-    _state = initialState;
-  }
+      {this.pageScope})
+      : _state = initialState;
 
   String _unhandledErrorMessage(BlocEvent event) =>
       'There is no handler for the type ${event.runtimeType}';
@@ -105,10 +104,10 @@ class BlocBuilder<T> {
   final T Function(Object? arguments) initialState;
 
   ///Sync handlers as a map by type
-  late final Map<Type, T Function(T, Object)> _syncHandlersByEvent = {};
+  final Map<Type, T Function(T, Object)> _syncHandlersByEvent = {};
 
   ///Async handlers as a map by type
-  late final Map<
+  final Map<
       Type,
       Future<T> Function(
           T Function() state,
