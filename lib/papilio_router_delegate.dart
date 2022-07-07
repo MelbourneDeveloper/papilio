@@ -11,16 +11,16 @@ import 'package:papilio/state_holder.dart';
 class _Stack<E> {
   final list = <E>[];
 
-  void push(E value) => list.add(value);
-
-  E pop() => list.removeLast();
-
   E get peek => list.last;
 
   int get length => list.length;
 
   bool get isEmpty => list.isEmpty;
   bool get isNotEmpty => list.isNotEmpty;
+
+  void push(E value) => list.add(value);
+
+  E pop() => list.removeLast();
 
   @override
   String toString() => list.toString();
@@ -38,14 +38,18 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   final Map<String, PageBuilder> _pageBuildersByKey;
 
   final Future<void> Function(
-      PapilioRouterDelegate<T> delegate, T configuration) _setNewRoutePath;
+    PapilioRouterDelegate<T> delegate,
+    T configuration,
+  ) _setNewRoutePath;
 
   @override
   final GlobalKey<NavigatorState> navigatorKey;
 
-  PapilioRouterDelegate(this._pageBuildersByKey, this._setNewRoutePath,
-      this.getCurrentConfiguration)
-      : navigatorKey = GlobalKey<NavigatorState>();
+  PapilioRouterDelegate(
+    this._pageBuildersByKey,
+    this._setNewRoutePath,
+    this.getCurrentConfiguration,
+  ) : navigatorKey = GlobalKey<NavigatorState>();
 
   ///Pops the current page from the stack and returns the result of the pop.
   ///The page's onPopPage callback will fire when this happens.

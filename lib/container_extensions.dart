@@ -5,7 +5,6 @@ import 'package:papilio/papilio_router_delegate.dart';
 import 'package:papilio/papilio_router_delegate_builder.dart';
 import 'package:papilio/papilio_routing_configuration.dart';
 
-
 extension ContainerBuilderExtensions on IocContainerBuilder {
   void addRouting<T>(
     PapilioRoutingConfiguration<T> Function(IocContainer container)
