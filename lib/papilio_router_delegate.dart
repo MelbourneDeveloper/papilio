@@ -51,6 +51,17 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
     this.getCurrentConfiguration,
   ) : navigatorKey = GlobalKey<NavigatorState>();
 
+  @override
+  T get currentConfiguration => _pageStack.isNotEmpty
+      ? getCurrentConfiguration(_pageStack.peek)
+      : throw Exception(
+          "There are currently no pages. This probably happened because you "
+          "didn't navigate to a page onInit. "
+          "Call delegate.navigate in the body "
+          "of onInit in PapilioRoutingConfiguration");
+
+  List<Page<dynamic>> get pages => _pageStack.list.toList();
+
   ///Pops the current page from the stack and returns the result of the pop.
   ///The page's onPopPage callback will fire when this happens.
   bool pop({
@@ -88,7 +99,7 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
     _pageStack.pop();
     notifyListeners();
 
-    return true;
+    return pop;
   }
 
   void navigate<TState>(ValueKey<String> key,
@@ -128,17 +139,6 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
 
     notifyListeners();
   }
-
-  @override
-  T get currentConfiguration => _pageStack.isNotEmpty
-      ? getCurrentConfiguration(_pageStack.peek)
-      : throw Exception(
-          "There are currently no pages. This probably happened because you "
-          "didn't navigate to a page onInit. "
-          "Call delegate.navigate in the body "
-          "of onInit in PapilioRoutingConfiguration");
-
-  List<Page<dynamic>> get pages => _pageStack.list.toList();
 
   @override
   Widget build(BuildContext context) => Navigator(

@@ -36,28 +36,7 @@ class Bloc<T> {
     _state = initialState;
   }
 
-  void _updateState(T state) {
-    _state = state;
-    _streamController.sink.add(Snapshot(state, addEvent, addEventSync));
-  }
-
-  T _executeHandlerSync(T state, BlocEvent event) {
-    if (_syncHandlersByEvent.containsKey(event.runtimeType)) {
-      return _syncHandlersByEvent[event.runtimeType]!(state, event);
-    }
-    throw UnsupportedError(unhandledErrorMessage(event));
-  }
-
-  Future<T> _executeHandler(
-      T Function() getState, BlocEvent event, Function(T) updateState) {
-    if (_handlersByEvent.containsKey(event.runtimeType)) {
-      return _handlersByEvent[event.runtimeType]!(
-          () => _state, event, updateState, pageScope);
-    }
-    throw UnsupportedError(unhandledErrorMessage(event));
-  }
-
-  String unhandledErrorMessage(BlocEvent event) =>
+  String _unhandledErrorMessage(BlocEvent event) =>
       'There is no handler for the type ${event.runtimeType}';
 
   ///The stream of state updates. Listen to this with a StreamBuilder<T>
@@ -82,6 +61,27 @@ class Bloc<T> {
   ///Close the stream
   void dispose() {
     _streamController.close();
+  }
+
+  void _updateState(T state) {
+    _state = state;
+    _streamController.sink.add(Snapshot(state, addEvent, addEventSync));
+  }
+
+  T _executeHandlerSync(T state, BlocEvent event) {
+    if (_syncHandlersByEvent.containsKey(event.runtimeType)) {
+      return _syncHandlersByEvent[event.runtimeType]!(state, event);
+    }
+    throw UnsupportedError(_unhandledErrorMessage(event));
+  }
+
+  Future<T> _executeHandler(
+      T Function() getState, BlocEvent event, Function(T) updateState) {
+    if (_handlersByEvent.containsKey(event.runtimeType)) {
+      return _handlersByEvent[event.runtimeType]!(
+          () => _state, event, updateState, pageScope);
+    }
+    throw UnsupportedError(_unhandledErrorMessage(event));
   }
 }
 
