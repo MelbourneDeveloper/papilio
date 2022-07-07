@@ -2,6 +2,8 @@
 
 Build beautiful apps with Flutter
 
+Notes sample app coming soon...
+
 ### Declaritive Framework for Flutter
 Compose your app with ease and leave the plumbing up to the framework
 
@@ -15,4 +17,4 @@ Send events to the business logic component and let the framework handle UI chan
 Access you dependencies with dependency injection when you need them in the app
 
 ### Declarative Approach to Navigation
-Specify page names and `StatelessWidget`s to seamlessly transition between pages
+Specify page names and `StatelessWidget`s to seamlessly transition between pages. Respond to navigation from BloC handlers instead of UI callbacks
