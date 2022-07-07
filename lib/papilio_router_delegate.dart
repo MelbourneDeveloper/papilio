@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:papilio/bloc.dart';
 import 'package:papilio/page_args.dart';
 import 'package:papilio/page_builder.dart';
+import 'package:papilio/papilio_route.dart';
 
 import 'package:papilio/state_holder.dart';
 
@@ -46,24 +47,44 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
       this.getCurrentConfiguration)
       : navigatorKey = GlobalKey<NavigatorState>();
 
-  void pop() {
+  ///Pops the current page from the stack and returns the result of the pop.
+  ///The page's onPopPage callback will fire when this happens.
+  bool pop({
+    Route? route,
+    // ignore: avoid_annotating_with_dynamic
+    dynamic result,
+    PageArgs? pageArgs,
+    PageBuilder? pageBuilder,
+  }) {
     if (_pageStack.length < 2) {
-      return;
+      return false;
     }
 
-    final materialPage = _pageStack.peek;
-    final pageArgs = materialPage.arguments! as PageArgs;
-    final materialPageBuilder = _pageBuildersByKey[pageArgs.key.value]!;
-    if (materialPageBuilder.onPop != null) {
-      //TODO: Put tests around this
-      final pop = materialPageBuilder.onPop!(pageArgs.pageScope);
-      if (!pop) {
-        return;
-      }
+    var pop = false;
+
+    if (route == null) {
+      final materialPage = _pageStack.peek;
+      final pageArgsFromStack = materialPage.arguments! as PageArgs;
+      final pageBuilderFromStack =
+          _pageBuildersByKey[pageArgsFromStack.key.value];
+      pop = pageBuilderFromStack!.onPopPage(
+          PapilioRoute(
+              settings:
+                  RouteSettings(name: materialPage.name, arguments: pageArgs)),
+          null,
+          pageArgsFromStack);
+    } else {
+      pop = pageBuilder!.onPopPage(route, result, pageArgs!);
+    }
+
+    if (!pop) {
+      return false;
     }
 
     _pageStack.pop();
     notifyListeners();
+
+    return true;
   }
 
   void navigate<TState>(ValueKey<String> key,
@@ -125,13 +146,15 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
         key: navigatorKey,
         pages: pages,
         onPopPage: (route, result) {
-          if (!route.didPop(result)) {
-            return false;
-          }
+          final materialPage = route.settings;
+          final pageArgs = materialPage.arguments! as PageArgs;
+          final materialPageBuilder = _pageBuildersByKey[pageArgs.key.value]!;
 
-          pop();
-
-          return true;
+          return pop(
+              route: route,
+              result: result,
+              pageArgs: pageArgs,
+              pageBuilder: materialPageBuilder);
         },
       );
 
