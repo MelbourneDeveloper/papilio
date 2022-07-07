@@ -75,6 +75,8 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
     PageArgs? pageArgs,
     PageBuilder? pageBuilder,
   }) {
+    //TODO: This method is pretty filthy. Clean it up.
+
     if (_pageStack.length < 2) {
       return false;
     }
@@ -92,8 +94,15 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
                   RouteSettings(name: materialPage.name, arguments: pageArgs)),
           null,
           pageArgsFromStack);
+
+      if (pop) {
+        pageArgsFromStack.bloc.dispose();
+      }
     } else {
       pop = pageBuilder!.onPopPage(route, result, pageArgs!);
+      if (pop) {
+        pageArgs.bloc.dispose();
+      }
     }
 
     if (!pop) {
@@ -117,7 +126,7 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
         .build(arguments: arguments, pageScope: pageScope) as Bloc<TState>;
 
     _pageStack.push(MaterialPage(
-        arguments: PageArgs(key, pageScope, arguments),
+        arguments: PageArgs(key, pageScope, arguments, bloc),
         name: key.value,
         child: StreamBuilder<Snapshot<TState>>(
             stream: bloc.stream,
