@@ -126,20 +126,15 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   }
 
   @override
-  T get currentConfiguration => getCurrentConfiguration(_pageStack.peek);
+  T get currentConfiguration => _pageStack.isNotEmpty
+      ? getCurrentConfiguration(_pageStack.peek)
+      : throw Exception(
+          "There are currently no pages. This probably happened because you "
+          "didn't navigate to a page onInit. "
+          "Call delegate.navigate in the body "
+          "of onInit in PapilioRoutingConfiguration");
 
-  List<Page<dynamic>> get pages {
-    if (_pageStack.length == 0) {
-      return [
-        const MaterialPage(
-            child: CircularProgressIndicator.adaptive(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-        ))
-      ];
-    }
-
-    return _pageStack.list.toList();
-  }
+  List<Page<dynamic>> get pages => _pageStack.list.toList();
 
   @override
   Widget build(BuildContext context) => Navigator(
