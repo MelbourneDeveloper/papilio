@@ -37,6 +37,10 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
 
   final Map<String, PageBuilder> _pageBuildersByKey;
 
+  ///Called by the [Router] when the [Router.routeInformationProvider] reports
+  ///that a new route has been pushed to the application
+  ///by the operating system.
+  ///See [RouterDelegate] for more information.
   final Future<void> Function(
     PapilioRouterDelegate<T> delegate,
     T configuration,
