@@ -28,6 +28,11 @@ class PapilioRoutingConfiguration<T> {
 
   ///Use this to navigate to the first page in the app
   void Function(PapilioRouterDelegate delegate, IocContainer container) onInit;
+
+  ///Called by the [Router] when the [Router.routeInformationProvider] reports
+  ///that a new route has been pushed to the application
+  ///by the operating system.
+  ///See [RouterDelegate] for more information.
   Future<void> Function(PapilioRouterDelegate<T> delegate, T configuration)?
       onSetNewRoutePath;
 }

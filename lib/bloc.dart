@@ -9,6 +9,8 @@ class RebuildEvent extends BlocEvent {}
 
 ///Business Logic Component
 class Bloc<T> {
+  bool isDisposed = false;
+
   ///The current state of the bloc
   T _state;
 
@@ -43,6 +45,9 @@ class Bloc<T> {
 
   ///Send an async event to the bloc
   Future<T> addEvent(BlocEvent event) async {
+    if (isDisposed) {
+      return _state;
+    }
     _state = await _executeHandler(() => _state, event, _updateState);
     _streamController.sink.add(Snapshot(_state, addEvent, addEventSync));
     return _state;
@@ -50,6 +55,10 @@ class Bloc<T> {
 
   ///Send a synchronous event to the bloc
   T addEventSync<Tb extends BlocEvent>(Tb event) {
+    if (isDisposed) {
+      return _state;
+    }
+
     if (event is! RebuildEvent) {
       _state = _executeHandlerSync(_state, event);
     }
@@ -59,10 +68,15 @@ class Bloc<T> {
 
   ///Close the stream
   void dispose() {
+    isDisposed = true;
     _streamController.close();
   }
 
   void _updateState(T state) {
+    if (isDisposed) {
+      return;
+    }
+
     _state = state;
     _streamController.sink.add(Snapshot(state, addEvent, addEventSync));
   }

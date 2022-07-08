@@ -31,12 +31,16 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
         // ignore: prefer_mixin
         ChangeNotifier,
         PopNavigatorRouterDelegateMixin<T> {
-  final T Function(Page currentPage) getCurrentConfiguration;
+  final T Function(Page currentPage) _getCurrentConfiguration;
 
   final _Stack<MaterialPage> _pageStack = _Stack<MaterialPage>();
 
   final Map<String, PageBuilder> _pageBuildersByKey;
 
+  ///Called by the [Router] when the [Router.routeInformationProvider] reports
+  ///that a new route has been pushed to the application
+  ///by the operating system.
+  ///See [RouterDelegate] for more information.
   final Future<void> Function(
     PapilioRouterDelegate<T> delegate,
     T configuration,
@@ -48,12 +52,12 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   PapilioRouterDelegate(
     this._pageBuildersByKey,
     this._setNewRoutePath,
-    this.getCurrentConfiguration,
+    this._getCurrentConfiguration,
   ) : navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   T get currentConfiguration => _pageStack.isNotEmpty
-      ? getCurrentConfiguration(_pageStack.peek)
+      ? _getCurrentConfiguration(_pageStack.peek)
       : throw Exception(
           "There are currently no pages. This probably happened because you "
           "didn't navigate to a page onInit. "
@@ -71,6 +75,8 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
     PageArgs? pageArgs,
     PageBuilder? pageBuilder,
   }) {
+    //TODO: This method is pretty filthy. Clean it up.
+
     if (_pageStack.length < 2) {
       return false;
     }
@@ -88,8 +94,15 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
                   RouteSettings(name: materialPage.name, arguments: pageArgs)),
           null,
           pageArgsFromStack);
+
+      if (pop) {
+        pageArgsFromStack.bloc.dispose();
+      }
     } else {
       pop = pageBuilder!.onPopPage(route, result, pageArgs!);
+      if (pop) {
+        pageArgs.bloc.dispose();
+      }
     }
 
     if (!pop) {
@@ -113,7 +126,7 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
         .build(arguments: arguments, pageScope: pageScope) as Bloc<TState>;
 
     _pageStack.push(MaterialPage(
-        arguments: PageArgs(key, pageScope, arguments),
+        arguments: PageArgs(key, pageScope, arguments, bloc),
         name: key.value,
         child: StreamBuilder<Snapshot<TState>>(
             stream: bloc.stream,
