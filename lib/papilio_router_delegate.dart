@@ -31,7 +31,7 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
         // ignore: prefer_mixin
         ChangeNotifier,
         PopNavigatorRouterDelegateMixin<T> {
-  final T Function(Page currentPage) getCurrentConfiguration;
+  final T Function(Page currentPage) _getCurrentConfiguration;
 
   final _Stack<MaterialPage> _pageStack = _Stack<MaterialPage>();
 
@@ -52,12 +52,12 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   PapilioRouterDelegate(
     this._pageBuildersByKey,
     this._setNewRoutePath,
-    this.getCurrentConfiguration,
+    this._getCurrentConfiguration,
   ) : navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   T get currentConfiguration => _pageStack.isNotEmpty
-      ? getCurrentConfiguration(_pageStack.peek)
+      ? _getCurrentConfiguration(_pageStack.peek)
       : throw Exception(
           "There are currently no pages. This probably happened because you "
           "didn't navigate to a page onInit. "
