@@ -7,3 +7,6 @@ dart pub publish
 - Add ability to call `pop` from navigator
 - Unify `onPopPage` so `pop` always fires the callback
 - General cleanup 
+## 0.4.0-beta
+- Dispose the BloC on pop
+- Make a function private
