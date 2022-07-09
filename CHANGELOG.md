@@ -10,3 +10,6 @@ dart pub publish
 ## 0.4.0-beta
 - Dispose the BloC on pop
 - Make a function private
+## 0.5.0-beta
+- Remove a `late` variable
+- `addRouting` will now put `PapilioRoutingConfiguration<T>` in the container
