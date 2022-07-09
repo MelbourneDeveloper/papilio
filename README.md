@@ -6,8 +6,6 @@ Check out the live sample app [Papilio Note](https://www.papilionote.com) in the
 
 <img width="1225" alt="image" src="https://user-images.githubusercontent.com/16697547/178098531-0c0efbb2-8f57-414a-8512-4f1564f97ef8.png">
 
-Notes sample app coming soon...
-
 ### Declaritive Framework for Flutter
 Compose your app with ease and leave the plumbing up to the framework
 
