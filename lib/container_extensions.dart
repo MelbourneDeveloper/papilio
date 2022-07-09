@@ -10,11 +10,10 @@ extension ContainerBuilderExtensions on IocContainerBuilder {
     PapilioRoutingConfiguration<T> Function(IocContainer container)
         getRoutingFunctions,
   ) {
-    //TODO: Avoid using late here. This code is a bit stinky
-    late final PapilioRoutingConfiguration<T> routingFunctions;
+    addSingleton(getRoutingFunctions);
 
     addSingleton((container) {
-      routingFunctions = getRoutingFunctions(container);
+      final routingFunctions = container.get<PapilioRoutingConfiguration<T>>();
       final delegateBuilder = PapilioRouterDelegateBuilder<T>(
           routingFunctions.currentRouteConfiguration);
       routingFunctions.buildRoutes(delegateBuilder);
@@ -24,9 +23,12 @@ extension ContainerBuilderExtensions on IocContainerBuilder {
       return delegate;
     });
 
-    addSingleton((container) => PapilioRouteInformationParser<T>(
-        routingFunctions.parseRouteInformation,
-        routingFunctions.restoreRouteInformation));
+    addSingleton((container) {
+      final routingFunctions = container.get<PapilioRoutingConfiguration<T>>();
+      return PapilioRouteInformationParser<T>(
+          routingFunctions.parseRouteInformation,
+          routingFunctions.restoreRouteInformation);
+    });
   }
 }
 
