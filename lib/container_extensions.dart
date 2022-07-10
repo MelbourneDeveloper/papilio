@@ -6,6 +6,9 @@ import 'package:papilio/papilio_router_delegate_builder.dart';
 import 'package:papilio/papilio_routing_configuration.dart';
 
 extension ContainerBuilderExtensions on IocContainerBuilder {
+  ///Adds a [PapilioRouterDelegate] to the [IocContainer] so that you can use it
+  ///in your [MaterialApp]. This is the main method for wiring up your Papilio
+  ///app
   void addRouting<T>(
     PapilioRoutingConfiguration<T> Function(IocContainer container)
         getRoutingFunctions,
@@ -33,6 +36,8 @@ extension ContainerBuilderExtensions on IocContainerBuilder {
 }
 
 extension ContainerExtensions on IocContainer {
+  ///Specify the type of your state, and type argument for your
+  ///router delegate
   void navigate<T, T2>(ValueKey<String> key,
           {Object? arguments, Object? pageScope}) =>
       get<PapilioRouterDelegate<T2>>()
