@@ -1,5 +1,5 @@
-name: example
-description: A new Flutter project.
+name: papilio_example
+description: Simplest posible papilio framework sample. See the Papilio Note repo for a more complete sample app
 
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
