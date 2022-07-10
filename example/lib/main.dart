@@ -18,6 +18,9 @@ class PageRoute {
 @immutable
 class Increment extends BlocEvent {}
 
+@immutable
+class Decrement extends BlocEvent {}
+
 void main() {
   const homePageName = '/home';
   const homeKey = ValueKey(homePageName);
@@ -30,7 +33,8 @@ void main() {
             container: container,
             name: homePageName,
             initialState: (arguments) => 0,
-            pageBody: (context) => const MyHomePage(title: "Papilio Sample"),
+            pageBody: (context) => const MyHomePage<Increment>(
+                title: "Papilio Sample - Increment"),
             buildBloc: (blocBuilder, container) => blocBuilder
                 .addSyncHandler<Increment>((state, event) => state + 1)),
         currentRouteConfiguration: (page) => page.name == homePageName
@@ -67,7 +71,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage<T extends BlocEvent> extends StatelessWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
@@ -95,9 +99,10 @@ class MyHomePage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => snapshot.sendEventSync(Increment()),
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        onPressed: () =>
+            snapshot.sendEventSync(T == Increment ? Increment() : Decrement()),
+        tooltip: T == Increment ? 'Increment' : 'Decrement',
+        child: Icon(T == Increment ? Icons.add : Icons.remove),
       ),
     );
   }
