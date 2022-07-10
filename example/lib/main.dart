@@ -85,18 +85,32 @@ class MyHomePage<T extends BlocEvent> extends StatelessWidget {
         title: Text(title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              snapshot.state.toString(),
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
+        child: Stack(children: [
+          Align(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'You have pushed the button this many times:',
+              ),
+              Text(
+                snapshot.state.toString(),
+                style: Theme.of(context).textTheme.headline4,
+              ),
+            ],
+          )),
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                child: BottomNavigationBar(items: [
+                  BottomNavigationBarItem(icon: Icon(Icons.add), label: "Increment"),
+                  BottomNavigationBarItem(icon: Icon(Icons.remove), label: "Decrement"),
+                ]),
+                color: Colors.red,
+                height: 100,
+                width: double.infinity,
+              ))
+        ]),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () =>
