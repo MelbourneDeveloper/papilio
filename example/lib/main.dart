@@ -5,6 +5,7 @@ import 'package:papilio/container_extensions.dart';
 import 'package:papilio/papilio_route_information_parser.dart';
 import 'package:papilio/papilio_router_delegate.dart';
 import 'package:papilio/papilio_routing_configuration.dart';
+import 'package:papilio/state_holder.dart';
 
 enum PageNumber { one, two }
 
@@ -18,7 +19,8 @@ class PageRoute {
 class Increment extends BlocEvent {}
 
 void main() {
-  const homeKey = ValueKey('/home');
+  const homePageName = '/home';
+  const homeKey = ValueKey(homePageName);
 
   final builder = IocContainerBuilder();
 
@@ -26,21 +28,22 @@ void main() {
     (container) => PapilioRoutingConfiguration<PageRoute>(
         buildRoutes: (delegate) => delegate.addPage<int>(
             container: container,
-            name: '/home',
+            name: homePageName,
             initialState: (arguments) => 0,
             pageBody: (context) => const MyHomePage(title: "Papilio Sample"),
             buildBloc: (blocBuilder, container) => blocBuilder
-                .addSyncHandler<Increment>((state, event) => state++)),
-        currentRouteConfiguration: (page) => page.name == '/home'
+                .addSyncHandler<Increment>((state, event) => state + 1)),
+        currentRouteConfiguration: (page) => page.name == homePageName
             ? PageRoute(PageNumber.one)
             : PageRoute(PageNumber.two),
         parseRouteInformation: (routeInformation) async =>
-            routeInformation.location == '/home'
+            routeInformation.location == homePageName
                 ? PageRoute(PageNumber.one)
                 : PageRoute(PageNumber.two),
         restoreRouteInformation: (pageRoute) => RouteInformation(
-            location: pageRoute.pageNumber == PageNumber.one ? "/home" : null),
-        onInit: (delegate, container) => delegate.navigate(homeKey)),
+            location:
+                pageRoute.pageNumber == PageNumber.one ? homePageName : null),
+        onInit: (delegate, container) => delegate.navigate<int>(homeKey)),
   );
 
   final container = builder.toContainer();
@@ -64,29 +67,18 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final snapshot = StateHolder.of<Snapshot<int>>(context).state;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Center(
         child: Column(
@@ -96,14 +88,14 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              snapshot.state.toString(),
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () => snapshot.sendEventSync(Increment()),
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
