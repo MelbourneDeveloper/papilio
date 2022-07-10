@@ -112,9 +112,9 @@ packages:
   papilio:
     dependency: "direct main"
     description:
-      name: papilio
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: ".."
+      relative: true
+    source: path
     version: "0.5.0-beta"
   path:
     dependency: transitive
