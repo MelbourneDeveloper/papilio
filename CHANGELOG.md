@@ -13,3 +13,5 @@ dart pub publish
 ## 0.5.0-beta
 - Remove a `late` variable
 - `addRouting` will now put `PapilioRoutingConfiguration<T>` in the container
+## 0.6.0-beta
+- Validate the type argument on navigate
