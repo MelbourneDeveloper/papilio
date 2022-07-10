@@ -19,12 +19,12 @@ class PageRoute {
 @immutable
 class PageState {
   final int counter;
-  final Key selectedRoute;
+  final int currentIndex;
 
-  const PageState(this.counter, this.selectedRoute);
+  const PageState(this.counter, this.currentIndex);
 
   PageState copyWith({int? counter}) =>
-      PageState(counter ?? this.counter, selectedRoute);
+      PageState(counter ?? this.counter, currentIndex);
 }
 
 @immutable
@@ -34,10 +34,10 @@ class Increment extends BlocEvent {}
 class Decrement extends BlocEvent {}
 
 @immutable
-class NavigateToIncrement extends BlocEvent {}
-
-@immutable
-class NavigateToDecrement extends BlocEvent {}
+class NavigateToIndex extends BlocEvent {
+  final int index;
+  NavigateToIndex(this.index);
+}
 
 void main() {
   const incrementName = '/increment';
@@ -53,28 +53,42 @@ void main() {
           ..addPage<PageState>(
               container: container,
               name: incrementName,
-              initialState: (arguments) => const PageState(0, incrementKey),
+              initialState: (arguments) => const PageState(0, 0),
               pageBody: (context) => const MyHomePage<Increment>(
                   title: "Papilio Sample - Increment"),
-              buildBloc: (blocBuilder, container) =>
-                  blocBuilder.addSyncHandler<Increment>((state, event) =>
-                      state.copyWith(counter: state.counter + 1)))
+              buildBloc: (blocBuilder, container) => blocBuilder
+                ..addSyncHandler<Increment>((state, event) =>
+                    state.copyWith(counter: state.counter + 1))
+                ..addSyncHandler<NavigateToIndex>((state, event) {
+                  if (event.index == 0) {
+                    state;
+                  }
+                  container.navigate<PageState, PageRoute>(decrementKey);
+                  return state;
+                }))
           ..addPage<PageState>(
               container: container,
               name: decrementName,
-              initialState: (arguments) => const PageState(0, decrementKey),
+              initialState: (arguments) => const PageState(10, 1),
               pageBody: (context) => const MyHomePage<Decrement>(
                   title: "Papilio Sample - Decrement"),
-              buildBloc: (blocBuilder, container) =>
-                  blocBuilder.addSyncHandler<Increment>((state, event) =>
-                      state.copyWith(counter: state.counter - 1))),
+              buildBloc: (blocBuilder, container) => blocBuilder
+                ..addSyncHandler<Decrement>((state, event) =>
+                    state.copyWith(counter: state.counter - 1))
+                ..addSyncHandler<NavigateToIndex>((state, event) {
+                  if (event.index == 1) {
+                    state;
+                  }
+                  container.navigate<PageState, PageRoute>(incrementKey);
+                  return state;
+                })),
         currentRouteConfiguration: (page) => page.name == incrementName
-            ? PageRoute(Page.increment)
-            : PageRoute(Page.decrement),
+            ? const PageRoute(Page.increment)
+            : const PageRoute(Page.decrement),
         parseRouteInformation: (routeInformation) async =>
             routeInformation.location == incrementName
-                ? PageRoute(Page.increment)
-                : PageRoute(Page.decrement),
+                ? const PageRoute(Page.increment)
+                : const PageRoute(Page.decrement),
         restoreRouteInformation: (pageRoute) => RouteInformation(
             location: pageRoute.page == Page.increment
                 ? incrementName
@@ -135,14 +149,18 @@ class MyHomePage<T extends BlocEvent> extends StatelessWidget {
           Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                child: BottomNavigationBar(items: [
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.add), label: "Increment"),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.remove), label: "Decrement"),
-                ]),
                 height: 80,
                 width: double.infinity,
+                child: BottomNavigationBar(
+                    currentIndex: snapshot.state.currentIndex,
+                    onTap: (index) =>
+                        snapshot.sendEventSync(NavigateToIndex(index)),
+                    items: const [
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.add), label: "Increment"),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.remove), label: "Decrement"),
+                    ]),
               ))
         ]),
       ),
