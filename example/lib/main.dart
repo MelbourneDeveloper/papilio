@@ -61,7 +61,7 @@ void main() {
                     state.copyWith(counter: state.counter + 1))
                 ..addSyncHandler<NavigateToIndex>((state, event) {
                   if (event.index == 0) {
-                    state;
+                    return state;
                   }
                   container.navigate<PageState, PageRoute>(decrementKey);
                   return state;
@@ -77,7 +77,7 @@ void main() {
                     state.copyWith(counter: state.counter - 1))
                 ..addSyncHandler<NavigateToIndex>((state, event) {
                   if (event.index == 1) {
-                    state;
+                    return state;
                   }
                   container.navigate<PageState, PageRoute>(incrementKey);
                   return state;
@@ -152,7 +152,7 @@ class MyHomePage<T extends BlocEvent> extends StatelessWidget {
           )),
           Align(
               alignment: Alignment.bottomCenter,
-              child: Container(
+              child: SizedBox(
                 height: 80,
                 width: double.infinity,
                 child: BottomNavigationBar(
