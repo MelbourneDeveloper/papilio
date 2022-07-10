@@ -7,12 +7,24 @@ import 'package:papilio/papilio_router_delegate.dart';
 import 'package:papilio/papilio_routing_configuration.dart';
 import 'package:papilio/state_holder.dart';
 
-enum PageNumber { one, two }
+enum Page { increment, decrement }
 
+@immutable
 class PageRoute {
-  final PageNumber pageNumber;
+  final Page page;
 
-  PageRoute(this.pageNumber);
+  const PageRoute(this.page);
+}
+
+@immutable
+class PageState {
+  final int counter;
+  final Key selectedRoute;
+
+  const PageState(this.counter, this.selectedRoute);
+
+  PageState copyWith({int? counter}) =>
+      PageState(counter ?? this.counter, selectedRoute);
 }
 
 @immutable
@@ -21,33 +33,54 @@ class Increment extends BlocEvent {}
 @immutable
 class Decrement extends BlocEvent {}
 
+@immutable
+class NavigateToIncrement extends BlocEvent {}
+
+@immutable
+class NavigateToDecrement extends BlocEvent {}
+
 void main() {
-  const homePageName = '/home';
-  const homeKey = ValueKey(homePageName);
+  const incrementName = '/increment';
+  const incrementKey = ValueKey(incrementName);
+  const decrementName = '/decrement';
+  const decrementKey = ValueKey(decrementName);
 
   final builder = IocContainerBuilder();
 
   builder.addRouting(
     (container) => PapilioRoutingConfiguration<PageRoute>(
-        buildRoutes: (delegate) => delegate.addPage<int>(
-            container: container,
-            name: homePageName,
-            initialState: (arguments) => 0,
-            pageBody: (context) => const MyHomePage<Increment>(
-                title: "Papilio Sample - Increment"),
-            buildBloc: (blocBuilder, container) => blocBuilder
-                .addSyncHandler<Increment>((state, event) => state + 1)),
-        currentRouteConfiguration: (page) => page.name == homePageName
-            ? PageRoute(PageNumber.one)
-            : PageRoute(PageNumber.two),
+        buildRoutes: (delegateBuilder) => delegateBuilder
+          ..addPage<PageState>(
+              container: container,
+              name: incrementName,
+              initialState: (arguments) => const PageState(0, incrementKey),
+              pageBody: (context) => const MyHomePage<Increment>(
+                  title: "Papilio Sample - Increment"),
+              buildBloc: (blocBuilder, container) =>
+                  blocBuilder.addSyncHandler<Increment>((state, event) =>
+                      state.copyWith(counter: state.counter + 1)))
+          ..addPage<PageState>(
+              container: container,
+              name: decrementName,
+              initialState: (arguments) => const PageState(0, decrementKey),
+              pageBody: (context) => const MyHomePage<Decrement>(
+                  title: "Papilio Sample - Decrement"),
+              buildBloc: (blocBuilder, container) =>
+                  blocBuilder.addSyncHandler<Increment>((state, event) =>
+                      state.copyWith(counter: state.counter - 1))),
+        currentRouteConfiguration: (page) => page.name == incrementName
+            ? PageRoute(Page.increment)
+            : PageRoute(Page.decrement),
         parseRouteInformation: (routeInformation) async =>
-            routeInformation.location == homePageName
-                ? PageRoute(PageNumber.one)
-                : PageRoute(PageNumber.two),
+            routeInformation.location == incrementName
+                ? PageRoute(Page.increment)
+                : PageRoute(Page.decrement),
         restoreRouteInformation: (pageRoute) => RouteInformation(
-            location:
-                pageRoute.pageNumber == PageNumber.one ? homePageName : null),
-        onInit: (delegate, container) => delegate.navigate<int>(homeKey)),
+            location: pageRoute.page == Page.increment
+                ? incrementName
+                : decrementName),
+        onInit: (delegate, container) =>
+            delegate.navigate<PageState>(incrementKey)),
   );
 
   final container = builder.toContainer();
@@ -78,7 +111,7 @@ class MyHomePage<T extends BlocEvent> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final snapshot = StateHolder.of<Snapshot<int>>(context).state;
+    final snapshot = StateHolder.of<Snapshot<PageState>>(context).state;
 
     return Scaffold(
       appBar: AppBar(
@@ -94,7 +127,7 @@ class MyHomePage<T extends BlocEvent> extends StatelessWidget {
                 'You have pushed the button this many times:',
               ),
               Text(
-                snapshot.state.toString(),
+                snapshot.state.counter.toString(),
                 style: Theme.of(context).textTheme.headline4,
               ),
             ],
@@ -103,11 +136,12 @@ class MyHomePage<T extends BlocEvent> extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: Container(
                 child: BottomNavigationBar(items: [
-                  BottomNavigationBarItem(icon: Icon(Icons.add), label: "Increment"),
-                  BottomNavigationBarItem(icon: Icon(Icons.remove), label: "Decrement"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.add), label: "Increment"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.remove), label: "Decrement"),
                 ]),
-                color: Colors.red,
-                height: 100,
+                height: 80,
                 width: double.infinity,
               ))
         ]),
