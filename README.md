@@ -4,7 +4,7 @@ Build beautiful apps with Flutter
 
 Check out the live sample app [Papilio Note](https://www.papilionote.com) in the browser. All source code is available for the sample app [here](https://github.com/MelbourneDeveloper/papilio_note). Or, check out this package's simple example app [here](https://melbournedeveloper.github.io/papilio). Notice that both samples fully integrate with browser navigation.
 
-<img width="50%" height="50%" alt="Papilio Note" src="https://user-images.githubusercontent.com/16697547/178098531-0c0efbb2-8f57-414a-8512-4f1564f97ef8.png">
+<img width="40%" height="40%" alt="Papilio Note" src="https://user-images.githubusercontent.com/16697547/178098531-0c0efbb2-8f57-414a-8512-4f1564f97ef8.png">
 
 ### Declaritive Framework for Flutter
 Compose your app with ease and leave the plumbing up to the framework
