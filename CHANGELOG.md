@@ -15,3 +15,5 @@ dart pub publish
 - `addRouting` will now put `PapilioRoutingConfiguration<T>` in the container
 ## 0.6.0-beta
 - Validate the type argument on navigate
+## 0.7.0-beta
+- Fix a spelling mistake
