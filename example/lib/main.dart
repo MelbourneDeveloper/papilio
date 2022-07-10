@@ -93,6 +93,10 @@ void main() {
             location: pageRoute.page == Page.increment
                 ? incrementName
                 : decrementName),
+        onSetNewRoutePath: (delegate, route) async =>
+            route.page == Page.increment
+                ? delegate.navigate<PageState>(incrementKey)
+                : delegate.navigate<PageState>(decrementKey),
         onInit: (delegate, container) =>
             delegate.navigate<PageState>(incrementKey)),
   );
