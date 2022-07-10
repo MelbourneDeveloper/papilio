@@ -90,3 +90,5 @@ void main() {
   runApp(MyApp(container));
 }
 ```
+
+Widget tests in the Papilio Note sample cover this package thoroughly, but this repo will soon have unit tests. View the widget tests [here](https://github.com/MelbourneDeveloper/papilio_note/blob/f999d2685586271c447ec7b5d83b4a36bfe13bd8/src/papilio_note/test/app_test.dart#L34).
