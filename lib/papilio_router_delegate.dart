@@ -117,6 +117,12 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
 
   void navigate<TState>(ValueKey<String> key,
       {Object? arguments, Object? pageScope}) {
+    assert(
+        TState != dynamic,
+        'You must specify a type argument for navigate. navigate passes the '
+        'type argument to inherited widgets so the StateHolder '
+        'can retrieve the state');
+
     final materialPageBuilder = _pageBuildersByKey[key.value]!;
 
     var isInitialized = false;
