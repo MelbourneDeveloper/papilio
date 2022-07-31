@@ -11,7 +11,7 @@ class PageBuilder<TState> {
     Route<dynamic> route,
     // ignore: avoid_annotating_with_dynamic
     dynamic result,
-    PageArgs<TState> pageArgs,
+    PageArgs<dynamic> pageArgs,
   ) onPopPage;
 
   PageBuilder({
@@ -23,7 +23,7 @@ class PageBuilder<TState> {
       Route<dynamic> route,
       // ignore: avoid_annotating_with_dynamic
       dynamic result,
-      PageArgs<TState> pageArgs,
+      PageArgs<dynamic> pageArgs,
     )?
         onPopPage,
   }) : onPopPage = onPopPage ??
