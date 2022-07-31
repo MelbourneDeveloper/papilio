@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ioc_container/ioc_container.dart';
+import 'package:papilio/basic_page_route.dart';
 import 'package:papilio/papilio_route_information_parser.dart';
 import 'package:papilio/papilio_router_delegate.dart';
 import 'package:papilio/papilio_router_delegate_builder.dart';
@@ -37,6 +38,34 @@ extension ContainerBuilderExtensions on IocContainerBuilder {
         routingFunctions.restoreRouteInformation,
       );
     });
+  }
+
+  void addBasicRouting(
+    void Function(PapilioRouterDelegateBuilder<BasicPageRoute> delegateBuilder)
+        buildRoutes,
+  ) {
+    addRouting<BasicPageRoute>(
+      (container) => PapilioRoutingConfiguration<BasicPageRoute>(
+          buildRoutes: buildRoutes,
+          currentRouteConfiguration: (page) => page.name == incrementName
+              ? const BasicPageRoute(incrementKey)
+              : const BasicPageRoute(decrementKey),
+          parseRouteInformation: (routeInformation) async =>
+              routeInformation.location == incrementName
+                  ? const BasicPageRoute(incrementKey)
+                  : const BasicPageRoute(decrementKey),
+          restoreRouteInformation: (pageRoute) => RouteInformation(
+                location: pageRoute.pageKey == incrementKey
+                    ? incrementName
+                    : decrementName,
+              ),
+          onSetNewRoutePath: (delegate, route) async =>
+              route.pageKey == incrementKey
+                  ? delegate.navigate<PageState>(incrementKey)
+                  : delegate.navigate<PageState>(decrementKey),
+          onInit: (delegate, container) =>
+              delegate.navigate<PageState>(incrementKey)),
+    );
   }
 }
 
