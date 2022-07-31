@@ -18,7 +18,7 @@ extension ContainerBuilderExtensions on IocContainerBuilder {
     addSingleton((container) {
       final routingFunctions = container.get<PapilioRoutingConfiguration<T>>();
       final delegateBuilder = PapilioRouterDelegateBuilder<T>(
-          routingFunctions.currentRouteConfiguration);
+          routingFunctions.currentRouteConfiguration,);
       routingFunctions.buildRoutes(delegateBuilder);
       final delegate = delegateBuilder.build(
           routingFunctions.onSetNewRoutePath ?? (d, t) => Future.value());
