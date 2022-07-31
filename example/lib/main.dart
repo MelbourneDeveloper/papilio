@@ -7,13 +7,13 @@ import 'package:papilio/papilio_router_delegate.dart';
 import 'package:papilio/papilio_routing_configuration.dart';
 import 'package:papilio/state_holder.dart';
 
-enum Page { increment, decrement }
-
 @immutable
-class PageRoute {
-  final Page page;
+class BasicPageRoute {
+  final ValueKey<String> pageKey;
+  final String argument;
 
-  const PageRoute(this.page);
+  const BasicPageRoute(this.pageKey, {String? argument})
+      : argument = argument ?? '';
 }
 
 @immutable
@@ -51,7 +51,7 @@ void main() {
 
   //This is the main method for adding papilio routing to your app.
   builder.addRouting(
-    (container) => PapilioRoutingConfiguration<PageRoute>(
+    (container) => PapilioRoutingConfiguration<BasicPageRoute>(
         buildRoutes: (delegateBuilder) => delegateBuilder
           //We add the Increment page here
           ..addPage<PageState>(
@@ -94,18 +94,18 @@ void main() {
         //This is plumbing for browsers etc. The next version of papilio will
         //have a basic page route that doesn't require this.
         currentRouteConfiguration: (page) => page.name == incrementName
-            ? const PageRoute(Page.increment)
-            : const PageRoute(Page.decrement),
+            ? const BasicPageRoute(incrementKey)
+            : const BasicPageRoute(decrementKey),
         parseRouteInformation: (routeInformation) async =>
             routeInformation.location == incrementName
-                ? const PageRoute(Page.increment)
-                : const PageRoute(Page.decrement),
+                ? const BasicPageRoute(incrementKey)
+                : const BasicPageRoute(decrementKey),
         restoreRouteInformation: (pageRoute) => RouteInformation(
-            location: pageRoute.page == Page.increment
+            location: pageRoute.pageKey == incrementKey
                 ? incrementName
                 : decrementName),
         onSetNewRoutePath: (delegate, route) async =>
-            route.page == Page.increment
+            route.pageKey == incrementKey
                 ? delegate.navigate<PageState>(incrementKey)
                 : delegate.navigate<PageState>(decrementKey),
         onInit: (delegate, container) =>
