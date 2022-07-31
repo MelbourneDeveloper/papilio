@@ -72,7 +72,7 @@ void main() {
                   if (event.index == 0) {
                     return state;
                   }
-                  container.navigate<PageState, PageRoute>(decrementKey);
+                  container.navigate<PageState, BasicPageRoute>(decrementKey);
                   return state;
                 }))
           ..addPage<PageState>(
@@ -88,7 +88,7 @@ void main() {
                   if (event.index == 1) {
                     return state;
                   }
-                  container.navigate<PageState, PageRoute>(incrementKey);
+                  container.navigate<PageState, BasicPageRoute>(incrementKey);
                   return state;
                 })),
         //This is plumbing for browsers etc. The next version of papilio will
@@ -126,9 +126,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      routerDelegate: container.get<PapilioRouterDelegate<PageRoute>>(),
+      routerDelegate: container.get<PapilioRouterDelegate<BasicPageRoute>>(),
       routeInformationParser:
-          container.get<PapilioRouteInformationParser<PageRoute>>(),
+          container.get<PapilioRouteInformationParser<BasicPageRoute>>(),
     );
   }
 }
