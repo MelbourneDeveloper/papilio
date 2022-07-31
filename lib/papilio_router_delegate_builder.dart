@@ -19,6 +19,7 @@ class PapilioRouterDelegateBuilder<T> {
   ///Bloc when the page first loads. Use onPop to cancel pops or clean up
   ///the pageScope. Use the blocBuilder to add async and sync bloc handlers to
   ///deal with UI changes
+  //ignore: long-parameter-list 
   void addPage<TBloc>({
     required IocContainer container,
     required String name,
@@ -47,6 +48,7 @@ class PapilioRouterDelegateBuilder<T> {
         blocBuilder: () {
           final blocBuilder = BlocBuilder<TBloc>(initialState);
           buildBloc(blocBuilder, container);
+          
           return blocBuilder;
         },
       ),

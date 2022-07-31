@@ -78,6 +78,8 @@ class Bloc<T> {
   ///Close the stream
   void dispose() {
     isDisposed = true;
+    //TODO: Perhaps we should do something with the return result here?
+    //ignore: avoid-ignoring-return-values
     _streamController.close();
   }
 
@@ -100,7 +102,7 @@ class Bloc<T> {
   Future<T> _executeHandler(
     T Function() getState,
     BlocEvent event,
-    Function(T) updateState,
+    void Function(T) updateState,
   ) {
     if (_handlersByEvent.containsKey(event.runtimeType)) {
       return _handlersByEvent[event.runtimeType]!(
