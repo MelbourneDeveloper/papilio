@@ -19,5 +19,6 @@ class StateHolder<T> extends InheritedWidget {
   }
 
   @override
-  bool updateShouldNotify(StateHolder oldWidget) => state != oldWidget.state;
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) =>
+      state != (oldWidget as StateHolder<T>).state;
 }
