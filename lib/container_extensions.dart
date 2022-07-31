@@ -41,8 +41,8 @@ extension ContainerBuilderExtensions on IocContainerBuilder {
 }
 
 extension ContainerExtensions on IocContainer {
-  ///Specify the type of your state, and type argument for your
-  ///router delegate
+  ///Navigates to a new page. Specify the page key, type of your state, and type
+  /// argument for your router delegate
   void navigate<T, T2>(
     ValueKey<String> key, {
     Object? arguments,

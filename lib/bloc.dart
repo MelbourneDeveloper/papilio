@@ -150,11 +150,18 @@ class BlocBuilder<T> {
 
   BlocBuilder(this.initialState);
 
-  ///Add an async event handler
+  ///Add an async Bloc event handler.
+  ///getState gets the current Bloc state. Because this function is async, the
+  ///the state may change between async calls.
+  ///The event is the event that was sent to the Bloc.
+  ///updateState is a function that updates the Bloc state. Call this to
+  ///set state on things like progress indicators in a long running process.
+  ///pageScope is an optional object that can be used for the lifetime of the
+  ///page.
   void addHandler<TEvent extends BlocEvent>(
     Future<T> Function(
       T Function() getState,
-      TEvent,
+      TEvent event,
       void Function(T) updateState,
       Object? pageScope,
     )
@@ -166,8 +173,7 @@ class BlocBuilder<T> {
             handler(getState, event as TEvent, updateState, pageScope),
       );
 
-  ///Add a sync event handler. Note: context is necessary for navigation but
-  ///you should not use it unless you know what you are doing
+  ///Add a sync event handler.
   void addSyncHandler<TEvent extends BlocEvent>(
     T Function(T state, TEvent event) handler,
   ) =>
