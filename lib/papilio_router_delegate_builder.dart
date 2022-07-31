@@ -7,9 +7,10 @@ import 'package:papilio/page_args.dart';
 import 'package:papilio/page_builder.dart';
 import 'package:papilio/papilio_router_delegate.dart';
 
+///A builder that can be used to create a [PapilioRouterDelegate]
 class PapilioRouterDelegateBuilder<T> {
-  final T Function(Page currentPage) getCurrentConfiguration;
-  final Map<String, PageBuilder> _pages = {};
+  final T Function(Page<dynamic> currentPage) getCurrentConfiguration;
+  final Map<String, PageBuilder<dynamic>> _pages = {};
   PapilioRouterDelegateBuilder(this.getCurrentConfiguration);
 
   void _addPage<TBLoc>(String name, PageBuilder<TBLoc> pageBuilder) =>
@@ -19,7 +20,7 @@ class PapilioRouterDelegateBuilder<T> {
   ///Bloc when the page first loads. Use onPop to cancel pops or clean up
   ///the pageScope. Use the blocBuilder to add async and sync bloc handlers to
   ///deal with UI changes
-  //ignore: long-parameter-list 
+  //ignore: long-parameter-list
   void addPage<TBloc>({
     required IocContainer container,
     required String name,
@@ -34,7 +35,7 @@ class PapilioRouterDelegateBuilder<T> {
       Route<dynamic> route,
       // ignore: avoid_annotating_with_dynamic
       dynamic result,
-      PageArgs pageArgs,
+      PageArgs<dynamic> pageArgs,
     )?
         onPopPage,
     BlocEvent? initialEvent,
@@ -48,7 +49,7 @@ class PapilioRouterDelegateBuilder<T> {
         blocBuilder: () {
           final blocBuilder = BlocBuilder<TBloc>(initialState);
           buildBloc(blocBuilder, container);
-          
+
           return blocBuilder;
         },
       ),

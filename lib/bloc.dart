@@ -51,14 +51,14 @@ class Bloc<T> {
   Stream<Snapshot<T>> get stream => _streamController.stream;
 
   ///Send an async event to the bloc
-  Future<T> addEvent(BlocEvent event) async {
+  Future<void> addEvent(BlocEvent event) async {
     if (isDisposed) {
-      return _state;
+      return;
     }
     _state = await _executeHandler(() => _state, event, _updateState);
     _streamController.sink.add(Snapshot(_state, addEvent, addEventSync));
 
-    return _state;
+    return;
   }
 
   ///Send a synchronous event to the bloc
@@ -120,7 +120,7 @@ class Bloc<T> {
 ///the Bloc
 class Snapshot<T> {
   final T state;
-  final Future<T> Function(BlocEvent event) sendEvent;
+  final Future<void> Function(BlocEvent event) sendEvent;
 
   final void Function<Tb extends BlocEvent>(Tb event) sendEventSync;
 

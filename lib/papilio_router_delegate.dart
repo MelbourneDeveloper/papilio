@@ -31,11 +31,12 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
         // ignore: prefer_mixin
         ChangeNotifier,
         PopNavigatorRouterDelegateMixin<T> {
-  final T Function(Page currentPage) _getCurrentConfiguration;
+  final T Function(Page<dynamic> currentPage) _getCurrentConfiguration;
 
-  final _Stack<MaterialPage> _pageStack = _Stack<MaterialPage>();
+  final _Stack<MaterialPage<dynamic>> _pageStack =
+      _Stack<MaterialPage<dynamic>>();
 
-  final Map<String, PageBuilder> _pageBuildersByKey;
+  final Map<String, PageBuilder<dynamic>> _pageBuildersByKey;
 
   ///Called by the [Router] when the [Router.routeInformationProvider] reports
   ///that a new route has been pushed to the application
@@ -70,11 +71,11 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   ///Pops the current page from the stack and returns the result of the pop.
   ///The page's onPopPage callback will fire when this happens.
   bool pop({
-    Route? route,
+    Route<dynamic>? route,
     // ignore: avoid_annotating_with_dynamic
     dynamic result,
-    PageArgs? pageArgs,
-    PageBuilder? pageBuilder,
+    PageArgs<dynamic>? pageArgs,
+    PageBuilder<dynamic>? pageBuilder,
   }) {
     //TODO: This method is pretty filthy. Clean it up.
 
@@ -139,8 +140,8 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
         .blocBuilder()
         .build(arguments: arguments, pageScope: pageScope) as Bloc<TState>;
 
-    _pageStack.push(MaterialPage(
-      arguments: PageArgs(key, pageScope, arguments, bloc),
+    _pageStack.push(MaterialPage<TState>(
+      arguments: PageArgs<TState>(key, pageScope, arguments, bloc),
       name: key.value,
       child: StreamBuilder<Snapshot<TState>>(
         stream: bloc.stream,
@@ -176,7 +177,11 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   Widget build(BuildContext context) => Navigator(
         key: navigatorKey,
         pages: pages,
-        onPopPage: (route, result) {
+        onPopPage: (
+          route,
+          //ignore: implicit_dynamic_parameter
+          result,
+        ) {
           final materialPage = route.settings;
           final pageArgs = materialPage.arguments! as PageArgs;
           final materialPageBuilder = _pageBuildersByKey[pageArgs.key.value]!;
