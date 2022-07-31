@@ -24,8 +24,12 @@ class Bloc<T> {
   ///Async handlers as a map by type
   final Map<
       Type,
-      Future<T> Function(T Function() state, Object, Function(T) updateState,
-          Object? pageScope)> _handlersByEvent;
+      Future<T> Function(
+    T Function() state,
+    Object,
+    void Function(T) updateState,
+    Object? pageScope,
+  )> _handlersByEvent;
 
   ///The initial state of the bloc
   final T initialState;
@@ -33,9 +37,12 @@ class Bloc<T> {
   ///Put short lived objected that need disposal here
   final Object? pageScope;
 
-  Bloc(this.initialState, this._handlersByEvent, this._syncHandlersByEvent,
-      {this.pageScope})
-      : _state = initialState;
+  Bloc(
+    this.initialState,
+    this._handlersByEvent,
+    this._syncHandlersByEvent, {
+    this.pageScope,
+  }) : _state = initialState;
 
   String _unhandledErrorMessage(BlocEvent event) =>
       'There is no handler for the type ${event.runtimeType}';
@@ -44,13 +51,14 @@ class Bloc<T> {
   Stream<Snapshot<T>> get stream => _streamController.stream;
 
   ///Send an async event to the bloc
-  Future<T> addEvent(BlocEvent event) async {
+  Future<void> addEvent(BlocEvent event) async {
     if (isDisposed) {
-      return _state;
+      return;
     }
     _state = await _executeHandler(() => _state, event, _updateState);
     _streamController.sink.add(Snapshot(_state, addEvent, addEventSync));
-    return _state;
+
+    return;
   }
 
   ///Send a synchronous event to the bloc
@@ -63,12 +71,15 @@ class Bloc<T> {
       _state = _executeHandlerSync(_state, event);
     }
     _streamController.sink.add(Snapshot(_state, addEvent, addEventSync));
+
     return _state;
   }
 
   ///Close the stream
   void dispose() {
     isDisposed = true;
+    //TODO: Perhaps we should do something with the return result here?
+    //ignore: avoid-ignoring-return-values
     _streamController.close();
   }
 
@@ -89,10 +100,17 @@ class Bloc<T> {
   }
 
   Future<T> _executeHandler(
-      T Function() getState, BlocEvent event, Function(T) updateState) {
+    T Function() getState,
+    BlocEvent event,
+    void Function(T) updateState,
+  ) {
     if (_handlersByEvent.containsKey(event.runtimeType)) {
       return _handlersByEvent[event.runtimeType]!(
-          () => _state, event, updateState, pageScope);
+        () => _state,
+        event,
+        updateState,
+        pageScope,
+      );
     }
     throw UnsupportedError(_unhandledErrorMessage(event));
   }
@@ -102,7 +120,7 @@ class Bloc<T> {
 ///the Bloc
 class Snapshot<T> {
   final T state;
-  final Future<T> Function(BlocEvent event) sendEvent;
+  final Future<void> Function(BlocEvent event) sendEvent;
 
   final void Function<Tb extends BlocEvent>(Tb event) sendEventSync;
 
@@ -124,33 +142,51 @@ class BlocBuilder<T> {
   final Map<
       Type,
       Future<T> Function(
-          T Function() state,
-          Object,
-          void Function(T) updateState,
-          Object? pageScope)> _handlersByEvent = {};
+    T Function() state,
+    Object,
+    void Function(T) updateState,
+    Object? pageScope,
+  )> _handlersByEvent = {};
 
   BlocBuilder(this.initialState);
 
-  ///Add an async event handler
+  ///Add an async Bloc event handler.
+  ///getState gets the current Bloc state. Because this function is async, the
+  ///the state may change between async calls.
+  ///The event is the event that was sent to the Bloc.
+  ///updateState is a function that updates the Bloc state. Call this to
+  ///set state on things like progress indicators in a long running process.
+  ///pageScope is an optional object that can be used for the lifetime of the
+  ///page.
   void addHandler<TEvent extends BlocEvent>(
-          Future<T> Function(T Function() getState, TEvent,
-                  void Function(T) updateState, Object? pageScope)
-              handler) =>
+    Future<T> Function(
+      T Function() getState,
+      TEvent event,
+      void Function(T) updateState,
+      Object? pageScope,
+    )
+        handler,
+  ) =>
       _handlersByEvent.putIfAbsent(
         TEvent,
         () => (getState, event, updateState, pageScope) =>
             handler(getState, event as TEvent, updateState, pageScope),
       );
 
-  ///Add a sync event handler. Note: context is necessary for navigation but
-  ///you should not use it unless you know what you are doing
+  ///Add a sync event handler.
   void addSyncHandler<TEvent extends BlocEvent>(
-          T Function(T state, TEvent event) handler) =>
+    T Function(T state, TEvent event) handler,
+  ) =>
       _syncHandlersByEvent.putIfAbsent(
-          TEvent, () => (s, e) => handler(s, e as TEvent));
+        TEvent,
+        () => (s, e) => handler(s, e as TEvent),
+      );
 
   ///Build the Bloc
-  Bloc<T> build({Object? arguments, Object? pageScope}) =>
-      Bloc<T>(initialState(arguments), _handlersByEvent, _syncHandlersByEvent,
-          pageScope: pageScope);
+  Bloc<T> build({Object? arguments, Object? pageScope}) => Bloc<T>(
+        initialState(arguments),
+        _handlersByEvent,
+        _syncHandlersByEvent,
+        pageScope: pageScope,
+      );
 }

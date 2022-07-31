@@ -18,28 +18,36 @@ extension ContainerBuilderExtensions on IocContainerBuilder {
     addSingleton((container) {
       final routingFunctions = container.get<PapilioRoutingConfiguration<T>>();
       final delegateBuilder = PapilioRouterDelegateBuilder<T>(
-          routingFunctions.currentRouteConfiguration);
+        routingFunctions.currentRouteConfiguration,
+      );
       routingFunctions.buildRoutes(delegateBuilder);
       final delegate = delegateBuilder.build(
-          routingFunctions.onSetNewRoutePath ?? (d, t) => Future.value());
+        routingFunctions.onSetNewRoutePath ?? (d, t) => Future.value(),
+      );
       routingFunctions.onInit(delegate, container);
+
       return delegate;
     });
 
     addSingleton((container) {
       final routingFunctions = container.get<PapilioRoutingConfiguration<T>>();
+
       return PapilioRouteInformationParser<T>(
-          routingFunctions.parseRouteInformation,
-          routingFunctions.restoreRouteInformation);
+        routingFunctions.parseRouteInformation,
+        routingFunctions.restoreRouteInformation,
+      );
     });
   }
 }
 
 extension ContainerExtensions on IocContainer {
-  ///Specify the type of your state, and type argument for your
-  ///router delegate
-  void navigate<T, T2>(ValueKey<String> key,
-          {Object? arguments, Object? pageScope}) =>
+  ///Navigates to a new page. Specify the page key, type of your state, and type
+  /// argument for your router delegate
+  void navigate<T, T2>(
+    ValueKey<String> key, {
+    Object? arguments,
+    Object? pageScope,
+  }) =>
       get<PapilioRouterDelegate<T2>>()
           .navigate<T>(key, arguments: arguments, pageScope: pageScope);
 }

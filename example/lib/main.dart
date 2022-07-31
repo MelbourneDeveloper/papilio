@@ -45,19 +45,28 @@ void main() {
   const decrementName = '/decrement';
   const decrementKey = ValueKey(decrementName);
 
+  //We use an Ioc Container to store the RouterDelegate, RouteInformationParser
+  //Blocs, state and other services
   final builder = IocContainerBuilder();
 
+  //This is the main method for adding papilio routing to your app.
   builder.addRouting(
     (container) => PapilioRoutingConfiguration<PageRoute>(
         buildRoutes: (delegateBuilder) => delegateBuilder
+          //We add the Increment page here
           ..addPage<PageState>(
               container: container,
               name: incrementName,
               initialState: (arguments) => const PageState(0, 0),
+              //The page body is always a stateless widget
               pageBody: (context) => const MyHomePage<Increment>(
                   title: "Papilio Sample - Increment"),
+              //This is how we define the business logic with Bloc.
+              //We add handlers for the Navigate, Increment and Decrement
+              //events.
               buildBloc: (blocBuilder, container) => blocBuilder
                 ..addSyncHandler<Increment>((state, event) =>
+                    //We use non-destructive mutation (copyWith) to increment
                     state.copyWith(counter: state.counter + 1))
                 ..addSyncHandler<NavigateToIndex>((state, event) {
                   if (event.index == 0) {
@@ -82,6 +91,8 @@ void main() {
                   container.navigate<PageState, PageRoute>(incrementKey);
                   return state;
                 })),
+        //This is plumbing for browsers etc. The next version of papilio will
+        //have a basic page route that doesn't require this.
         currentRouteConfiguration: (page) => page.name == incrementName
             ? const PageRoute(Page.increment)
             : const PageRoute(Page.decrement),

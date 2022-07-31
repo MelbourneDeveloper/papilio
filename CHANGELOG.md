@@ -17,3 +17,5 @@ dart pub publish
 - Validate the type argument on navigate
 ## 0.7.0-beta
 - Fix a spelling mistake
+## 0.8.0-beta
+- Implement Dart Code Metrics and fix a bunch of analysis issues. Most importantly, this removes some implicit casts.
