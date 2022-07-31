@@ -90,7 +90,7 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
       final pageBuilderFromStack =
           _pageBuildersByKey[pageArgsFromStack.key.value];
       pop = pageBuilderFromStack!.onPopPage(
-        PapilioRoute(
+        PapilioRoute<T>(
           settings: RouteSettings(name: materialPage.name, arguments: pageArgs),
         ),
         null,
@@ -111,7 +111,10 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
       return false;
     }
 
+    //TODO: Log the popped page
+    //ignore: avoid-ignoring-return-values
     _pageStack.pop();
+
     notifyListeners();
 
     return pop;

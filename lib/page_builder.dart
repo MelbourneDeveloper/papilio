@@ -6,17 +6,32 @@ class PageBuilder<TState> {
   final Widget Function(BuildContext context) builder;
   final BlocBuilder<TState> Function() blocBuilder;
   BlocEvent? initialEvent;
-  // ignore: avoid_annotating_with_dynamic
-  final bool Function(Route<dynamic> route, dynamic result, PageArgs pageArgs)
-      onPopPage;
+
+  final bool Function(
+    Route<dynamic> route,
+    // ignore: avoid_annotating_with_dynamic
+    dynamic result,
+    PageArgs<TState> pageArgs,
+  ) onPopPage;
 
   PageBuilder({
     required this.builder,
     required this.blocBuilder,
     this.initialEvent,
     // ignore: avoid_annotating_with_dynamic
-    bool Function(Route<dynamic> route, dynamic result, PageArgs pageArgs)?
+    bool Function(
+      Route<dynamic> route,
+      // ignore: avoid_annotating_with_dynamic
+      dynamic result,
+      PageArgs<TState> pageArgs,
+    )?
         onPopPage,
-  }) : onPopPage =
-            onPopPage ?? ((route, result, pageArgs) => route.didPop(result));
+  }) : onPopPage = onPopPage ??
+            ((
+              route,
+              // ignore: implicit_dynamic_parameter
+              result,
+              pageArgs,
+            ) =>
+                route.didPop(result));
 }
