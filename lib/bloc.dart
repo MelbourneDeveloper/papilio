@@ -24,8 +24,8 @@ class Bloc<T> {
   ///Async handlers as a map by type
   final Map<
       Type,
-      Future<T> Function(T Function() state, Object, Function(T) updateState,
-          Object? pageScope)> _handlersByEvent;
+      Future<T> Function(T Function() state, Object,
+          void Function(T) updateState, Object? pageScope,)> _handlersByEvent;
 
   ///The initial state of the bloc
   final T initialState;
@@ -34,7 +34,7 @@ class Bloc<T> {
   final Object? pageScope;
 
   Bloc(this.initialState, this._handlersByEvent, this._syncHandlersByEvent,
-      {this.pageScope})
+      {this.pageScope,})
       : _state = initialState;
 
   String _unhandledErrorMessage(BlocEvent event) =>
