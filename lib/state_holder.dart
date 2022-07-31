@@ -14,6 +14,7 @@ class StateHolder<T> extends InheritedWidget {
     final StateHolder<T>? result =
         context.dependOnInheritedWidgetOfExactType<StateHolder<T>>();
     assert(result != null, 'No state of type $T found in context');
+
     return result!;
   }
 

@@ -9,6 +9,6 @@ void main() {
     final bloc = Bloc<String>("asd", {}, {});
     expect(() => bloc.addEvent(DummyEvent()), throwsA(isA<UnsupportedError>()));
     expect(() => bloc.addEventSync(DummyEvent()),
-        throwsA(isA<UnsupportedError>()));
+        throwsA(isA<UnsupportedError>()),);
   });
 }

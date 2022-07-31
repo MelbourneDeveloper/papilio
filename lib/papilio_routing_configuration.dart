@@ -4,13 +4,14 @@ import 'package:papilio/papilio_router_delegate.dart';
 import 'package:papilio/papilio_router_delegate_builder.dart';
 
 class PapilioRoutingConfiguration<T> {
-  PapilioRoutingConfiguration(
-      {required this.buildRoutes,
-      required this.currentRouteConfiguration,
-      required this.parseRouteInformation,
-      required this.restoreRouteInformation,
-      required this.onInit,
-      this.onSetNewRoutePath});
+  PapilioRoutingConfiguration({
+    required this.buildRoutes,
+    required this.currentRouteConfiguration,
+    required this.parseRouteInformation,
+    required this.restoreRouteInformation,
+    required this.onInit,
+    this.onSetNewRoutePath,
+  });
 
   ///Call addPage on the delegateBuilder to add a page to the router.
   final void Function(PapilioRouterDelegateBuilder<T> delegateBuilder)

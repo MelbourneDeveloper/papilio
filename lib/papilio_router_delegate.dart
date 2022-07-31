@@ -62,7 +62,8 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
           "There are currently no pages. This probably happened because you "
           "didn't navigate to a page onInit. "
           "Call delegate.navigate in the body "
-          "of onInit in PapilioRoutingConfiguration");
+          "of onInit in PapilioRoutingConfiguration",
+        );
 
   List<Page<dynamic>> get pages => _pageStack.list.toList();
 
@@ -89,11 +90,12 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
       final pageBuilderFromStack =
           _pageBuildersByKey[pageArgsFromStack.key.value];
       pop = pageBuilderFromStack!.onPopPage(
-          PapilioRoute(
-              settings:
-                  RouteSettings(name: materialPage.name, arguments: pageArgs)),
-          null,
-          pageArgsFromStack);
+        PapilioRoute(
+          settings: RouteSettings(name: materialPage.name, arguments: pageArgs),
+        ),
+        null,
+        pageArgsFromStack,
+      );
 
       if (pop) {
         pageArgsFromStack.bloc.dispose();
@@ -115,8 +117,11 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
     return pop;
   }
 
-  void navigate<TState>(ValueKey<String> key,
-      {Object? arguments, Object? pageScope}) {
+  void navigate<TState>(
+    ValueKey<String> key, {
+    Object? arguments,
+    Object? pageScope,
+  }) {
     assert(
         TState != dynamic,
         'You must specify a type argument for navigate. navigate passes the '
@@ -132,29 +137,34 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
         .build(arguments: arguments, pageScope: pageScope) as Bloc<TState>;
 
     _pageStack.push(MaterialPage(
-        arguments: PageArgs(key, pageScope, arguments, bloc),
-        name: key.value,
-        child: StreamBuilder<Snapshot<TState>>(
-            stream: bloc.stream,
-            initialData: Snapshot<TState>(
-                bloc.initialState, bloc.addEvent, bloc.addEventSync),
-            builder: (context, asyncSnapshot) {
-              //We put the initial event on the post frame callback
-              //because otherwise it may execute before the StreamBuilder
-              //starts listening to events
-              WidgetsBinding.instance.addPostFrameCallback((_) async {
-                if (!isInitialized &&
-                    materialPageBuilder.initialEvent != null) {
-                  isInitialized = true;
+      arguments: PageArgs(key, pageScope, arguments, bloc),
+      name: key.value,
+      child: StreamBuilder<Snapshot<TState>>(
+        stream: bloc.stream,
+        initialData: Snapshot<TState>(
+          bloc.initialState,
+          bloc.addEvent,
+          bloc.addEventSync,
+        ),
+        builder: (context, asyncSnapshot) {
+          //We put the initial event on the post frame callback
+          //because otherwise it may execute before the StreamBuilder
+          //starts listening to events
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            if (!isInitialized && materialPageBuilder.initialEvent != null) {
+              isInitialized = true;
 
-                  await bloc.addEvent(materialPageBuilder.initialEvent!);
-                }
-              });
+              await bloc.addEvent(materialPageBuilder.initialEvent!);
+            }
+          });
 
-              return StateHolder<Snapshot<TState>>(
-                  state: asyncSnapshot.data!,
-                  child: materialPageBuilder.builder(context));
-            })));
+          return StateHolder<Snapshot<TState>>(
+            state: asyncSnapshot.data!,
+            child: materialPageBuilder.builder(context),
+          );
+        },
+      ),
+    ));
 
     notifyListeners();
   }
@@ -169,10 +179,11 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
           final materialPageBuilder = _pageBuildersByKey[pageArgs.key.value]!;
 
           return pop(
-              route: route,
-              result: result,
-              pageArgs: pageArgs,
-              pageBuilder: materialPageBuilder);
+            route: route,
+            result: result,
+            pageArgs: pageArgs,
+            pageBuilder: materialPageBuilder,
+          );
         },
       );
 

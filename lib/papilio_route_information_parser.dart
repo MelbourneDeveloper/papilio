@@ -7,7 +7,9 @@ class PapilioRouteInformationParser<T> extends RouteInformationParser<T> {
   final RouteInformation? Function(T configuration) _restoreRouteInformation;
 
   PapilioRouteInformationParser(
-      this._parseRouteInformation, this._restoreRouteInformation);
+    this._parseRouteInformation,
+    this._restoreRouteInformation,
+  );
 
   @override
   Future<T> parseRouteInformation(RouteInformation routeInformation) =>
