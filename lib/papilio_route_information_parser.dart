@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 
+///Parses information about the route (usuall a web URL)
 class PapilioRouteInformationParser<T> extends RouteInformationParser<T> {
+  ///Constructs a new [PapilioRouteInformationParser]
   PapilioRouteInformationParser(
     this._parseRouteInformation,
     this._restoreRouteInformation,

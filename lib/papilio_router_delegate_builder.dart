@@ -9,7 +9,9 @@ import "package:papilio/papilio_router_delegate.dart";
 
 ///A builder that can be used to create a [PapilioRouterDelegate]
 class PapilioRouterDelegateBuilder<T> {
+  ///Constructs a new [PapilioRouterDelegateBuilder]
   PapilioRouterDelegateBuilder(this.getCurrentConfiguration);
+  ///Give a page, return the configuration
   final T Function(Page<dynamic> currentPage) getCurrentConfiguration;
   final Map<String, PageBuilder<dynamic>> _pages = {};
 
@@ -56,6 +58,7 @@ class PapilioRouterDelegateBuilder<T> {
     );
   }
 
+  ///Build the [PapilioRouterDelegate]
   PapilioRouterDelegate<T> build(
     Future<void> Function(
       PapilioRouterDelegate<T> delegate,

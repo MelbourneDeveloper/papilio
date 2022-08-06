@@ -26,11 +26,15 @@ class _Stack<E> {
   String toString() => list.toString();
 }
 
+///Paplilio router delegate. This is the main class that you pass to the
+///[MaterialApp] to use papilio routing.
 class PapilioRouterDelegate<T> extends RouterDelegate<T>
     with
         // ignore: prefer_mixin
         ChangeNotifier,
         PopNavigatorRouterDelegateMixin<T> {
+  ///Constructs a new router delegate. You should use
+  ///PapilioRouterDelegateBuilder
   PapilioRouterDelegate(
     this._pageBuildersByKey,
     this._setNewRoutePath,
@@ -65,6 +69,8 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
           "of onInit in PapilioRoutingConfiguration",
         );
 
+
+  // ignore: public_member_api_docs
   List<Page<dynamic>> get pages => _pageStack.list.toList();
 
   ///Pops the current page from the stack and returns the result of the pop.
@@ -120,6 +126,8 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
     return pop;
   }
 
+  ///Pushes a new page onto the stack and navigates to it. You must specify a 
+  ///the type of state so the [StateHolder] knows what to pass in.
   void navigate<TState>(
     ValueKey<String> key, {
     Object? arguments,

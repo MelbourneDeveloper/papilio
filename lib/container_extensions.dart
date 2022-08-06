@@ -5,6 +5,7 @@ import "package:papilio/papilio_router_delegate.dart";
 import "package:papilio/papilio_router_delegate_builder.dart";
 import "package:papilio/papilio_routing_configuration.dart";
 
+///Use the extensions to add Papilio routing with the [IocContainerBuilder]
 extension ContainerBuilderExtensions on IocContainerBuilder {
   ///Adds a [PapilioRouterDelegate] to the [IocContainer] so that you can use it
   ///in your [MaterialApp]. This is the main method for wiring up your Papilio
@@ -40,6 +41,7 @@ extension ContainerBuilderExtensions on IocContainerBuilder {
   }
 }
 
+///Use these extensions to navigate using the [IocContainer] with papilio
 extension ContainerExtensions on IocContainer {
   ///Navigates to a new page. Specify the page key, type of your state, and type
   /// argument for your router delegate
