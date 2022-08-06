@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:ioc_container/ioc_container.dart';
-import 'package:papilio/papilio_route_information_parser.dart';
-import 'package:papilio/papilio_router_delegate.dart';
-import 'package:papilio/papilio_router_delegate_builder.dart';
-import 'package:papilio/papilio_routing_configuration.dart';
+import "package:flutter/material.dart";
+import "package:ioc_container/ioc_container.dart";
+import "package:papilio/papilio_route_information_parser.dart";
+import "package:papilio/papilio_router_delegate.dart";
+import "package:papilio/papilio_router_delegate_builder.dart";
+import "package:papilio/papilio_routing_configuration.dart";
 
 extension ContainerBuilderExtensions on IocContainerBuilder {
   ///Adds a [PapilioRouterDelegate] to the [IocContainer] so that you can use it

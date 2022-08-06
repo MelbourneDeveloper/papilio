@@ -1,17 +1,17 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
+import "dart:async";
+import "package:flutter/material.dart";
 
-import 'package:ioc_container/ioc_container.dart';
-import 'package:papilio/bloc.dart';
-import 'package:papilio/page_args.dart';
-import 'package:papilio/page_builder.dart';
-import 'package:papilio/papilio_router_delegate.dart';
+import "package:ioc_container/ioc_container.dart";
+import "package:papilio/bloc.dart";
+import "package:papilio/page_args.dart";
+import "package:papilio/page_builder.dart";
+import "package:papilio/papilio_router_delegate.dart";
 
 ///A builder that can be used to create a [PapilioRouterDelegate]
 class PapilioRouterDelegateBuilder<T> {
+  PapilioRouterDelegateBuilder(this.getCurrentConfiguration);
   final T Function(Page<dynamic> currentPage) getCurrentConfiguration;
   final Map<String, PageBuilder<dynamic>> _pages = {};
-  PapilioRouterDelegateBuilder(this.getCurrentConfiguration);
 
   void _addPage<TBLoc>(String name, PageBuilder<TBLoc> pageBuilder) =>
       _pages.putIfAbsent(name, () => pageBuilder);
@@ -31,7 +31,7 @@ class PapilioRouterDelegateBuilder<T> {
       IocContainer container,
     )
         buildBloc,
-    final bool Function(
+    bool Function(
       Route<dynamic> route,
       // ignore: avoid_annotating_with_dynamic
       dynamic result,

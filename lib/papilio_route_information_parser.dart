@@ -1,15 +1,14 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 class PapilioRouteInformationParser<T> extends RouteInformationParser<T> {
-  final Future<T> Function(RouteInformation routeInformation)
-      _parseRouteInformation;
-
-  final RouteInformation? Function(T configuration) _restoreRouteInformation;
-
   PapilioRouteInformationParser(
     this._parseRouteInformation,
     this._restoreRouteInformation,
   );
+  final Future<T> Function(RouteInformation routeInformation)
+      _parseRouteInformation;
+
+  final RouteInformation? Function(T configuration) _restoreRouteInformation;
 
   @override
   Future<T> parseRouteInformation(RouteInformation routeInformation) =>

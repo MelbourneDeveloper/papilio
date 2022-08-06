@@ -1,12 +1,12 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:papilio/bloc.dart';
-import 'package:papilio/page_args.dart';
-import 'package:papilio/page_builder.dart';
-import 'package:papilio/papilio_route.dart';
+import "package:flutter/material.dart";
+import "package:papilio/bloc.dart";
+import "package:papilio/page_args.dart";
+import "package:papilio/page_builder.dart";
+import "package:papilio/papilio_route.dart";
 
-import 'package:papilio/state_holder.dart';
+import "package:papilio/state_holder.dart";
 
 class _Stack<E> {
   final list = <E>[];
@@ -31,6 +31,11 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
         // ignore: prefer_mixin
         ChangeNotifier,
         PopNavigatorRouterDelegateMixin<T> {
+  PapilioRouterDelegate(
+    this._pageBuildersByKey,
+    this._setNewRoutePath,
+    this._getCurrentConfiguration,
+  ) : navigatorKey = GlobalKey<NavigatorState>();
   final T Function(Page<dynamic> currentPage) _getCurrentConfiguration;
 
   final _Stack<MaterialPage<dynamic>> _pageStack =
@@ -50,12 +55,6 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   @override
   final GlobalKey<NavigatorState> navigatorKey;
 
-  PapilioRouterDelegate(
-    this._pageBuildersByKey,
-    this._setNewRoutePath,
-    this._getCurrentConfiguration,
-  ) : navigatorKey = GlobalKey<NavigatorState>();
-
   @override
   T get currentConfiguration => _pageStack.isNotEmpty
       ? _getCurrentConfiguration(_pageStack.peek)
@@ -71,7 +70,7 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   ///Pops the current page from the stack and returns the result of the pop.
   ///The page's onPopPage callback will fire when this happens.
   bool pop({
-    Route<dynamic>? route,
+    final Route<dynamic>? route,
     // ignore: avoid_annotating_with_dynamic
     dynamic result,
     PageArgs<dynamic>? pageArgs,
@@ -127,10 +126,11 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
     Object? pageScope,
   }) {
     assert(
-        TState != dynamic,
-        'You must specify a type argument for navigate. navigate passes the '
-        'type argument to inherited widgets so the StateHolder '
-        'can retrieve the state');
+      TState != dynamic,
+      "You must specify a type argument for navigate. navigate passes the "
+      "type argument to inherited widgets so the StateHolder "
+      "can retrieve the state",
+    );
 
     final materialPageBuilder = _pageBuildersByKey[key.value]!;
 
@@ -140,35 +140,37 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
         .blocBuilder()
         .build(arguments: arguments, pageScope: pageScope) as Bloc<TState>;
 
-    _pageStack.push(MaterialPage<TState>(
-      arguments: PageArgs<TState>(key, pageScope, arguments, bloc),
-      name: key.value,
-      child: StreamBuilder<Snapshot<TState>>(
-        stream: bloc.stream,
-        initialData: Snapshot<TState>(
-          bloc.initialState,
-          bloc.addEvent,
-          bloc.addEventSync,
+    _pageStack.push(
+      MaterialPage<TState>(
+        arguments: PageArgs<TState>(key, pageScope, arguments, bloc),
+        name: key.value,
+        child: StreamBuilder<Snapshot<TState>>(
+          stream: bloc.stream,
+          initialData: Snapshot<TState>(
+            bloc.initialState,
+            bloc.addEvent,
+            bloc.addEventSync,
+          ),
+          builder: (context, final asyncSnapshot) {
+            //We put the initial event on the post frame callback
+            //because otherwise it may execute before the StreamBuilder
+            //starts listening to events
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              if (!isInitialized && materialPageBuilder.initialEvent != null) {
+                isInitialized = true;
+
+                await bloc.addEvent(materialPageBuilder.initialEvent!);
+              }
+            });
+
+            return StateHolder<Snapshot<TState>>(
+              state: asyncSnapshot.data!,
+              child: materialPageBuilder.builder(context),
+            );
+          },
         ),
-        builder: (context, asyncSnapshot) {
-          //We put the initial event on the post frame callback
-          //because otherwise it may execute before the StreamBuilder
-          //starts listening to events
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            if (!isInitialized && materialPageBuilder.initialEvent != null) {
-              isInitialized = true;
-
-              await bloc.addEvent(materialPageBuilder.initialEvent!);
-            }
-          });
-
-          return StateHolder<Snapshot<TState>>(
-            state: asyncSnapshot.data!,
-            child: materialPageBuilder.builder(context),
-          );
-        },
       ),
-    ));
+    );
 
     notifyListeners();
   }
@@ -178,9 +180,9 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
         key: navigatorKey,
         pages: pages,
         onPopPage: (
-          route,
+          final route,
           //ignore: implicit_dynamic_parameter
-          result,
+          final result,
         ) {
           final materialPage = route.settings;
           final pageArgs = materialPage.arguments! as PageArgs;

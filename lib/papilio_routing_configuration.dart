@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:ioc_container/ioc_container.dart';
-import 'package:papilio/papilio_router_delegate.dart';
-import 'package:papilio/papilio_router_delegate_builder.dart';
+import "package:flutter/material.dart";
+import "package:ioc_container/ioc_container.dart";
+import "package:papilio/papilio_router_delegate.dart";
+import "package:papilio/papilio_router_delegate_builder.dart";
 
 class PapilioRoutingConfiguration<T> {
   PapilioRoutingConfiguration({
