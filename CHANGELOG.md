@@ -21,3 +21,5 @@ dart pub publish
 - Implement Dart Code Metrics and fix a bunch of analysis issues. Most importantly, this removes some implicit casts.
 ## 0.9.0-beta
 - Add documentation to all public members and fix a bunch of analysis issues.
+## 0.10.0-beta
+- Rerelease due to some apparent code analysis issues at pub.dev
