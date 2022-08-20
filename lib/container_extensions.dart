@@ -28,21 +28,21 @@ extension ContainerBuilderExtensions on IocContainerBuilder {
     });
   }
 
-  void _addDelegate<T>() {
-    addSingleton((container) {
-      final routingFunctions = container.get<PapilioRoutingConfiguration<T>>();
-      final delegateBuilder = PapilioRouterDelegateBuilder<T>(
-        routingFunctions.currentRouteConfiguration,
-      );
-      routingFunctions.buildRoutes(delegateBuilder);
-      final delegate = delegateBuilder.build(
-        routingFunctions.onSetNewRoutePath ?? (d, t) => Future.value(),
-      );
-      routingFunctions.onInit(delegate, container);
+  void _addDelegate<T>() => addSingleton((container) {
+        final routingFunctions =
+            container.get<PapilioRoutingConfiguration<T>>();
+        final delegateBuilder = PapilioRouterDelegateBuilder<T>(
+          routingFunctions.currentRouteConfiguration,
+        );
+        routingFunctions.buildRoutes(delegateBuilder);
 
-      return delegate;
-    });
-  }
+        final delegate = delegateBuilder.build(
+          routingFunctions.onSetNewRoutePath ?? (d, t) => Future.value(),
+        );
+        routingFunctions.onInit(delegate, container);
+
+        return delegate;
+      });
 }
 
 ///Use these extensions to navigate using the [IocContainer] with papilio

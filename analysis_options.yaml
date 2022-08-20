@@ -467,7 +467,7 @@ dart_code_metrics:
     number-of-parameters: 4
     source-lines-of-code: 50
     weight-of-class: 0.33
-    halstead-volume: 280
+    halstead-volume: 350
   metrics-exclude:
   rules:
     - newline-before-return:
