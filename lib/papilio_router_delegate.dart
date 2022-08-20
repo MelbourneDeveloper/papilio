@@ -176,28 +176,41 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
             bloc.addEvent,
             bloc.addEventSync,
           ),
-          builder: (context, final asyncSnapshot) {
-            //TODO: This variable is not cool. Find another way to do this.
-            var isInitialized = false;
-
-            //We put the initial event on the post frame callback
-            //because otherwise it may execute before the StreamBuilder
-            //starts listening to events
-            WidgetsBinding.instance.addPostFrameCallback((_) async {
-              if (!isInitialized && materialPageBuilder.initialEvent != null) {
-                isInitialized = true;
-
-                await bloc.addEvent(materialPageBuilder.initialEvent!);
-              }
-            });
-
-            return StateHolder<Snapshot<TState>>(
-              state: asyncSnapshot.data!,
-              child: materialPageBuilder.builder(context),
-            );
-          },
+          builder: (context, final asyncSnapshot) =>
+              _materialPageBuilder<TState>(
+            materialPageBuilder,
+            bloc,
+            asyncSnapshot,
+            context,
+          ),
         ),
       );
+
+  StateHolder<Snapshot<dynamic>> _materialPageBuilder<TState>(
+    PageBuilder<dynamic> materialPageBuilder,
+    Bloc<TState> bloc,
+    AsyncSnapshot<Snapshot<TState>> asyncSnapshot,
+    BuildContext context,
+  ) {
+    //TODO: This variable is not cool. Find another way to do this.
+    var isInitialized = false;
+
+    //We put the initial event on the post frame callback
+    //because otherwise it may execute before the StreamBuilder
+    //starts listening to events
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!isInitialized && materialPageBuilder.initialEvent != null) {
+        isInitialized = true;
+
+        await bloc.addEvent(materialPageBuilder.initialEvent!);
+      }
+    });
+
+    return StateHolder<Snapshot<TState>>(
+      state: asyncSnapshot.data!,
+      child: materialPageBuilder.builder(context),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => Navigator(
