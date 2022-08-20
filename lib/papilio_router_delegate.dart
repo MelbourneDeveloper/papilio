@@ -69,7 +69,6 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
           'of onInit in PapilioRoutingConfiguration',
         );
 
-
   // ignore: public_member_api_docs
   List<Page<dynamic>> get pages => _pageStack.list.toList();
 
@@ -91,21 +90,7 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
     var pop = false;
 
     if (route == null) {
-      final materialPage = _pageStack.peek;
-      final pageArgsFromStack = materialPage.arguments! as PageArgs;
-      final pageBuilderFromStack =
-          _pageBuildersByKey[pageArgsFromStack.key.value];
-      pop = pageBuilderFromStack!.onPopPage(
-        PapilioRoute<T>(
-          settings: RouteSettings(name: materialPage.name, arguments: pageArgs),
-        ),
-        null,
-        pageArgsFromStack,
-      );
-
-      if (pop) {
-        pageArgsFromStack.bloc.dispose();
-      }
+      pop = _popNullRoute(pageArgs);
     } else {
       pop = pageBuilder!.onPopPage(route, result, pageArgs!);
       if (pop) {
@@ -126,7 +111,27 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
     return pop;
   }
 
-  ///Pushes a new page onto the stack and navigates to it. You must specify a 
+  bool _popNullRoute(PageArgs<dynamic>? pageArgs) {
+    final materialPage = _pageStack.peek;
+    final pageArgsFromStack = materialPage.arguments! as PageArgs;
+    final pageBuilderFromStack =
+        _pageBuildersByKey[pageArgsFromStack.key.value];
+    final pop = pageBuilderFromStack!.onPopPage(
+      PapilioRoute<T>(
+        settings: RouteSettings(name: materialPage.name, arguments: pageArgs),
+      ),
+      null,
+      pageArgsFromStack,
+    );
+
+    if (pop) {
+      pageArgsFromStack.bloc.dispose();
+    }
+
+    return pop;
+  }
+
+  ///Pushes a new page onto the stack and navigates to it. You must specify a
   ///the type of state so the [StateHolder] knows what to pass in.
   void navigate<TState>(
     ValueKey<String> key, {
