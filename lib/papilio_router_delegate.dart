@@ -147,13 +147,25 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
 
     final materialPageBuilder = _pageBuildersByKey[key.value]!;
 
-    var isInitialized = false;
-
     final bloc = materialPageBuilder
         .blocBuilder()
         .build(arguments: arguments, pageScope: pageScope) as Bloc<TState>;
 
     _pageStack.push(
+      _materialPage(key, pageScope, arguments, bloc, materialPageBuilder),
+    );
+
+    notifyListeners();
+  }
+
+  //ignore: long-parameter-list
+  MaterialPage<dynamic> _materialPage<TState>(
+    ValueKey<String> key,
+    Object? pageScope,
+    Object? arguments,
+    Bloc<TState> bloc,
+    PageBuilder<dynamic> materialPageBuilder,
+  ) =>
       MaterialPage<TState>(
         arguments: PageArgs<TState>(key, pageScope, arguments, bloc),
         name: key.value,
@@ -165,6 +177,9 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
             bloc.addEventSync,
           ),
           builder: (context, final asyncSnapshot) {
+            //TODO: This variable is not cool. Find another way to do this.
+            var isInitialized = false;
+
             //We put the initial event on the post frame callback
             //because otherwise it may execute before the StreamBuilder
             //starts listening to events
@@ -182,11 +197,7 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
             );
           },
         ),
-      ),
-    );
-
-    notifyListeners();
-  }
+      );
 
   @override
   Widget build(BuildContext context) => Navigator(
