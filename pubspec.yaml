@@ -3,6 +3,7 @@ description: Build beautiful apps with Flutter. A declarative framework for stat
 version: 0.9.0-beta
 homepage: https://github.com/MelbourneDeveloper/papilio
 repository: https://github.com/MelbourneDeveloper/papilio
+publish_to: none
 
 environment:
   sdk: ">=2.17.3 <3.0.0"
@@ -13,6 +14,7 @@ dependencies:
     sdk: flutter
   ioc_container: ^0.6.0
   meta: ^1.7.0
+
 
 dev_dependencies:
   dart_code_metrics: ^4.16.0

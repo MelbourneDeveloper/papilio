@@ -1,16 +1,18 @@
+library papilio;
+
 import "dart:async";
 import "package:flutter/material.dart";
-
 import "package:ioc_container/ioc_container.dart";
-import "package:papilio/bloc.dart";
 import "package:papilio/page_args.dart";
 import "package:papilio/page_builder.dart";
 import "package:papilio/papilio_router_delegate.dart";
+import "package:papilio_bloc/bloc.dart";
 
 ///A builder that can be used to create a [PapilioRouterDelegate]
 class PapilioRouterDelegateBuilder<T> {
   ///Constructs a new [PapilioRouterDelegateBuilder]
   PapilioRouterDelegateBuilder(this.getCurrentConfiguration);
+
   ///Give a page, return the configuration
   final T Function(Page<dynamic> currentPage) getCurrentConfiguration;
   final Map<String, PageBuilder<dynamic>> _pages = {};

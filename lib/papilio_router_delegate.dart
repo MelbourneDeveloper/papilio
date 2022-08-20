@@ -1,12 +1,12 @@
-import "dart:async";
+library papilio;
 
+import "dart:async";
 import "package:flutter/material.dart";
-import "package:papilio/bloc.dart";
 import "package:papilio/page_args.dart";
 import "package:papilio/page_builder.dart";
 import "package:papilio/papilio_route.dart";
-
 import "package:papilio/state_holder.dart";
+import "package:papilio_bloc/bloc.dart";
 
 class _Stack<E> {
   final list = <E>[];

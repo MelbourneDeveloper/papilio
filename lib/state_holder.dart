@@ -1,3 +1,5 @@
+library papilio;
+
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 
@@ -17,9 +19,6 @@ class StateHolder<T> extends InheritedWidget {
   static StateHolder<T> of<T>(BuildContext context) {
     final result = context.dependOnInheritedWidgetOfExactType<StateHolder<T>>();
     assert(result != null, "No state of type $T found in context");
-
-    // ignore: unused_local_variable
-    const test = "asd";
 
     return result!;
   }
