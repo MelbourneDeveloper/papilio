@@ -16,6 +16,19 @@ extension ContainerBuilderExtensions on IocContainerBuilder {
   ) {
     addSingleton(getRoutingFunctions);
 
+    _addDelegate<T>();
+
+    addSingleton((container) {
+      final routingFunctions = container.get<PapilioRoutingConfiguration<T>>();
+
+      return PapilioRouteInformationParser<T>(
+        routingFunctions.parseRouteInformation,
+        routingFunctions.restoreRouteInformation,
+      );
+    });
+  }
+
+  void _addDelegate<T>() {
     addSingleton((container) {
       final routingFunctions = container.get<PapilioRoutingConfiguration<T>>();
       final delegateBuilder = PapilioRouterDelegateBuilder<T>(
@@ -28,15 +41,6 @@ extension ContainerBuilderExtensions on IocContainerBuilder {
       routingFunctions.onInit(delegate, container);
 
       return delegate;
-    });
-
-    addSingleton((container) {
-      final routingFunctions = container.get<PapilioRoutingConfiguration<T>>();
-
-      return PapilioRouteInformationParser<T>(
-        routingFunctions.parseRouteInformation,
-        routingFunctions.restoreRouteInformation,
-      );
     });
   }
 }
