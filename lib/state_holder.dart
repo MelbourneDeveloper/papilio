@@ -1,5 +1,5 @@
-import "package:flutter/foundation.dart";
-import "package:flutter/material.dart";
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 ///Passes state to any widget that is wrapped in StateHolder.
 class StateHolder<T> extends InheritedWidget {
@@ -16,10 +16,10 @@ class StateHolder<T> extends InheritedWidget {
   // ignore: public_member_api_docs
   static StateHolder<T> of<T>(BuildContext context) {
     final result = context.dependOnInheritedWidgetOfExactType<StateHolder<T>>();
-    assert(result != null, "No state of type $T found in context");
+    assert(result != null, 'No state of type $T found in context');
 
     // ignore: unused_local_variable
-    const test = "asd";
+    const test = 'asd';
 
     return result!;
   }
@@ -30,6 +30,6 @@ class StateHolder<T> extends InheritedWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<T>("state", state));
+    properties.add(DiagnosticsProperty<T>('state', state));
   }
 }

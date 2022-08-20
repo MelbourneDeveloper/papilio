@@ -1,12 +1,12 @@
-import "dart:async";
+import 'dart:async';
 
-import "package:flutter/material.dart";
-import "package:papilio/bloc.dart";
-import "package:papilio/page_args.dart";
-import "package:papilio/page_builder.dart";
-import "package:papilio/papilio_route.dart";
+import 'package:flutter/material.dart';
+import 'package:papilio/bloc.dart';
+import 'package:papilio/page_args.dart';
+import 'package:papilio/page_builder.dart';
+import 'package:papilio/papilio_route.dart';
 
-import "package:papilio/state_holder.dart";
+import 'package:papilio/state_holder.dart';
 
 class _Stack<E> {
   final list = <E>[];
@@ -63,10 +63,10 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   T get currentConfiguration => _pageStack.isNotEmpty
       ? _getCurrentConfiguration(_pageStack.peek)
       : throw Exception(
-          "There are currently no pages. This probably happened because you "
+          'There are currently no pages. This probably happened because you '
           "didn't navigate to a page onInit. "
-          "Call delegate.navigate in the body "
-          "of onInit in PapilioRoutingConfiguration",
+          'Call delegate.navigate in the body '
+          'of onInit in PapilioRoutingConfiguration',
         );
 
 
@@ -135,9 +135,9 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   }) {
     assert(
       TState != dynamic,
-      "You must specify a type argument for navigate. navigate passes the "
-      "type argument to inherited widgets so the StateHolder "
-      "can retrieve the state",
+      'You must specify a type argument for navigate. navigate passes the '
+      'type argument to inherited widgets so the StateHolder '
+      'can retrieve the state',
     );
 
     final materialPageBuilder = _pageBuildersByKey[key.value]!;

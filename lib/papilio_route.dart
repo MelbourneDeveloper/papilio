@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 
 ///Simple implementation of [Route] purely to provide info about the
 ///current route

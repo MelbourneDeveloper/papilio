@@ -1,11 +1,11 @@
-import "dart:async";
-import "package:flutter/material.dart";
+import 'dart:async';
+import 'package:flutter/material.dart';
 
-import "package:ioc_container/ioc_container.dart";
-import "package:papilio/bloc.dart";
-import "package:papilio/page_args.dart";
-import "package:papilio/page_builder.dart";
-import "package:papilio/papilio_router_delegate.dart";
+import 'package:ioc_container/ioc_container.dart';
+import 'package:papilio/bloc.dart';
+import 'package:papilio/page_args.dart';
+import 'package:papilio/page_builder.dart';
+import 'package:papilio/papilio_router_delegate.dart';
 
 ///A builder that can be used to create a [PapilioRouterDelegate]
 class PapilioRouterDelegateBuilder<T> {

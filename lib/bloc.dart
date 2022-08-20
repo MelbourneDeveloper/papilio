@@ -1,6 +1,6 @@
-import "dart:async";
+import 'dart:async';
 
-import "package:meta/meta.dart";
+import 'package:meta/meta.dart';
 
 ///Resend the current state to trigger a rebuild. This is the
 ///equivalent of setState
@@ -46,7 +46,7 @@ class Bloc<T> {
   final Object? pageScope;
 
   String _unhandledErrorMessage(BlocEvent event) =>
-      "There is no handler for the type ${event.runtimeType}";
+      'There is no handler for the type ${event.runtimeType}';
 
   ///The stream of state updates. Listen to this with a StreamBuilder<T>
   Stream<Snapshot<T>> get stream => _streamController.stream;
