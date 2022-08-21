@@ -1,6 +1,6 @@
 name: papilio
 description: Build beautiful apps with Flutter. A declarative framework for state, composition and navigation.
-version: 0.11.0-beta
+version: 0.12.0-beta
 homepage: https://github.com/MelbourneDeveloper/papilio
 repository: https://github.com/MelbourneDeveloper/papilio
 
