@@ -165,42 +165,44 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
     Object? arguments,
     Bloc<TState> bloc,
     PageBuilder<dynamic> materialPageBuilder,
-  ) =>
-      MaterialPage<TState>(
-        arguments: PageArgs<TState>(key, pageScope, arguments, bloc),
-        name: key.value,
-        child: StreamBuilder<Snapshot<TState>>(
-          stream: bloc.stream,
-          initialData: Snapshot<TState>(
-            bloc.initialState,
-            bloc.addEvent,
-            bloc.addEventSync,
-          ),
-          builder: (context, final asyncSnapshot) =>
-              _materialPageBuilder<TState>(
-            materialPageBuilder,
-            bloc,
-            asyncSnapshot,
-            context,
-          ),
-        ),
-      );
+  ) {
+    final pageArgs = PageArgs<TState>(key, pageScope, arguments, bloc);
 
+    return MaterialPage<TState>(
+      arguments: pageArgs,
+      name: key.value,
+      child: StreamBuilder<Snapshot<TState>>(
+        stream: bloc.stream,
+        initialData: Snapshot<TState>(
+          bloc.initialState,
+          bloc.addEvent,
+          bloc.addEventSync,
+        ),
+        builder: (context, final asyncSnapshot) => _materialPageBuilder<TState>(
+          materialPageBuilder,
+          bloc,
+          asyncSnapshot,
+          context,
+          pageArgs,
+        ),
+      ),
+    );
+  }
+
+  //ignore: long-parameter-list
   StateHolder<Snapshot<dynamic>> _materialPageBuilder<TState>(
     PageBuilder<dynamic> materialPageBuilder,
     Bloc<TState> bloc,
     AsyncSnapshot<Snapshot<TState>> asyncSnapshot,
     BuildContext context,
+    PageArgs<TState> pageArgs,
   ) {
-    //TODO: This variable is not cool. Find another way to do this.
-    var isInitialized = false;
-
     //We put the initial event on the post frame callback
     //because otherwise it may execute before the StreamBuilder
     //starts listening to events
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!isInitialized && materialPageBuilder.initialEvent != null) {
-        isInitialized = true;
+      if (!pageArgs.isInitialized && materialPageBuilder.initialEvent != null) {
+        pageArgs.isInitialized = true;
 
         await bloc.addEvent(materialPageBuilder.initialEvent!);
       }
