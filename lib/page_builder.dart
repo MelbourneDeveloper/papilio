@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:papilio/bloc.dart';
 import 'package:papilio/page_args.dart';
 
-///Builds a page route that will mint pages when the user 
-///navigates to them 
+///Builds a page route that will mint pages when the user
+///navigates to them
 class PageBuilder<TState> {
   ///Constructs a new page builder
   PageBuilder({
