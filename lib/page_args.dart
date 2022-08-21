@@ -3,12 +3,14 @@ library papilio;
 import "package:flutter/material.dart";
 import "package:papilio_bloc/bloc.dart";
 
+import 'package:flutter/material.dart';
+import 'package:papilio/bloc.dart';
+
 ///Holds details about the page for the route
 class PageArgs<TBloc> {
-
   ///Instantiates a new pageArgs
   PageArgs(this.key, this.pageScope, this.arguments, this.bloc);
-  
+
   ///The key of the page
   final ValueKey<String> key;
 
@@ -23,4 +25,7 @@ class PageArgs<TBloc> {
   ///No need to access this. We only keep a reference to this so we can
   ///dispose it on pop
   final Bloc<TBloc> bloc;
+
+  ///Whether or not the page is already initialized.
+  bool isInitialized = false;
 }

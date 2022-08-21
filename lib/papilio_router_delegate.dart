@@ -8,6 +8,8 @@ import "package:papilio/papilio_route.dart";
 import "package:papilio/state_holder.dart";
 import "package:papilio_bloc/bloc.dart";
 
+import 'package:papilio/state_holder.dart';
+
 class _Stack<E> {
   final list = <E>[];
 
@@ -63,12 +65,11 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   T get currentConfiguration => _pageStack.isNotEmpty
       ? _getCurrentConfiguration(_pageStack.peek)
       : throw Exception(
-          "There are currently no pages. This probably happened because you "
+          'There are currently no pages. This probably happened because you '
           "didn't navigate to a page onInit. "
-          "Call delegate.navigate in the body "
-          "of onInit in PapilioRoutingConfiguration",
+          'Call delegate.navigate in the body '
+          'of onInit in PapilioRoutingConfiguration',
         );
-
 
   // ignore: public_member_api_docs
   List<Page<dynamic>> get pages => _pageStack.list.toList();
@@ -91,21 +92,7 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
     var pop = false;
 
     if (route == null) {
-      final materialPage = _pageStack.peek;
-      final pageArgsFromStack = materialPage.arguments! as PageArgs;
-      final pageBuilderFromStack =
-          _pageBuildersByKey[pageArgsFromStack.key.value];
-      pop = pageBuilderFromStack!.onPopPage(
-        PapilioRoute<T>(
-          settings: RouteSettings(name: materialPage.name, arguments: pageArgs),
-        ),
-        null,
-        pageArgsFromStack,
-      );
-
-      if (pop) {
-        pageArgsFromStack.bloc.dispose();
-      }
+      pop = _popNullRoute(pageArgs);
     } else {
       pop = pageBuilder!.onPopPage(route, result, pageArgs!);
       if (pop) {
@@ -126,7 +113,27 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
     return pop;
   }
 
-  ///Pushes a new page onto the stack and navigates to it. You must specify a 
+  bool _popNullRoute(PageArgs<dynamic>? pageArgs) {
+    final materialPage = _pageStack.peek;
+    final pageArgsFromStack = materialPage.arguments! as PageArgs;
+    final pageBuilderFromStack =
+        _pageBuildersByKey[pageArgsFromStack.key.value];
+    final pop = pageBuilderFromStack!.onPopPage(
+      PapilioRoute<T>(
+        settings: RouteSettings(name: materialPage.name, arguments: pageArgs),
+      ),
+      null,
+      pageArgsFromStack,
+    );
+
+    if (pop) {
+      pageArgsFromStack.bloc.dispose();
+    }
+
+    return pop;
+  }
+
+  ///Pushes a new page onto the stack and navigates to it. You must specify a
   ///the type of state so the [StateHolder] knows what to pass in.
   void navigate<TState>(
     ValueKey<String> key, {
@@ -135,52 +142,78 @@ class PapilioRouterDelegate<T> extends RouterDelegate<T>
   }) {
     assert(
       TState != dynamic,
-      "You must specify a type argument for navigate. navigate passes the "
-      "type argument to inherited widgets so the StateHolder "
-      "can retrieve the state",
+      'You must specify a type argument for navigate. navigate passes the '
+      'type argument to inherited widgets so the StateHolder '
+      'can retrieve the state',
     );
 
     final materialPageBuilder = _pageBuildersByKey[key.value]!;
-
-    var isInitialized = false;
 
     final bloc = materialPageBuilder
         .blocBuilder()
         .build(arguments: arguments, pageScope: pageScope) as Bloc<TState>;
 
     _pageStack.push(
-      MaterialPage<TState>(
-        arguments: PageArgs<TState>(key, pageScope, arguments, bloc),
-        name: key.value,
-        child: StreamBuilder<Snapshot<TState>>(
-          stream: bloc.stream,
-          initialData: Snapshot<TState>(
-            bloc.initialState,
-            bloc.addEvent,
-            bloc.addEventSync,
-          ),
-          builder: (context, final asyncSnapshot) {
-            //We put the initial event on the post frame callback
-            //because otherwise it may execute before the StreamBuilder
-            //starts listening to events
-            WidgetsBinding.instance.addPostFrameCallback((_) async {
-              if (!isInitialized && materialPageBuilder.initialEvent != null) {
-                isInitialized = true;
-
-                await bloc.addEvent(materialPageBuilder.initialEvent!);
-              }
-            });
-
-            return StateHolder<Snapshot<TState>>(
-              state: asyncSnapshot.data!,
-              child: materialPageBuilder.builder(context),
-            );
-          },
-        ),
-      ),
+      _materialPage(key, pageScope, arguments, bloc, materialPageBuilder),
     );
 
     notifyListeners();
+  }
+
+  //ignore: long-parameter-list
+  MaterialPage<dynamic> _materialPage<TState>(
+    ValueKey<String> key,
+    Object? pageScope,
+    Object? arguments,
+    Bloc<TState> bloc,
+    PageBuilder<dynamic> materialPageBuilder,
+  ) {
+    final pageArgs = PageArgs<TState>(key, pageScope, arguments, bloc);
+
+    return MaterialPage<TState>(
+      arguments: pageArgs,
+      name: key.value,
+      child: StreamBuilder<Snapshot<TState>>(
+        stream: bloc.stream,
+        initialData: Snapshot<TState>(
+          bloc.initialState,
+          bloc.addEvent,
+          bloc.addEventSync,
+        ),
+        builder: (context, final asyncSnapshot) => _materialPageBuilder<TState>(
+          materialPageBuilder,
+          bloc,
+          asyncSnapshot,
+          context,
+          pageArgs,
+        ),
+      ),
+    );
+  }
+
+  //ignore: long-parameter-list
+  StateHolder<Snapshot<dynamic>> _materialPageBuilder<TState>(
+    PageBuilder<dynamic> materialPageBuilder,
+    Bloc<TState> bloc,
+    AsyncSnapshot<Snapshot<TState>> asyncSnapshot,
+    BuildContext context,
+    PageArgs<TState> pageArgs,
+  ) {
+    //We put the initial event on the post frame callback
+    //because otherwise it may execute before the StreamBuilder
+    //starts listening to events
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!pageArgs.isInitialized && materialPageBuilder.initialEvent != null) {
+        pageArgs.isInitialized = true;
+
+        await bloc.addEvent(materialPageBuilder.initialEvent!);
+      }
+    });
+
+    return StateHolder<Snapshot<TState>>(
+      state: asyncSnapshot.data!,
+      child: materialPageBuilder.builder(context),
+    );
   }
 
   @override
