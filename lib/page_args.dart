@@ -1,5 +1,3 @@
-library papilio;
-
 import 'package:flutter/material.dart';
 import 'package:papilio_bloc/bloc.dart';
 

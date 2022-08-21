@@ -25,3 +25,7 @@ dart pub publish
 - Rerelease due to some apparent code analysis issues at pub.dev
 ## 0.11.0-beta
 - Fix the isInitialized TODO and break up some large functions
+## 0.12.0-beta
+- Export all files from single library
+## 0.13.0-beta
+- Fix library structure issue

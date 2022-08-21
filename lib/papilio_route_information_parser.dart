@@ -1,5 +1,3 @@
-library papilio;
-
 import 'package:flutter/material.dart';
 
 ///Parses information about the route (usuall a web URL)

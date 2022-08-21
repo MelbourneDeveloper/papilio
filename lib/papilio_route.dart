@@ -1,7 +1,3 @@
-library papilio;
-
-
-
 import 'package:flutter/material.dart';
 
 ///Simple implementation of [Route] purely to provide info about the
