@@ -1,5 +1,6 @@
-import 'dart:async';
+library papilio;
 
+import 'dart:async';
 import 'package:meta/meta.dart';
 
 ///Resend the current state to trigger a rebuild. This is the
