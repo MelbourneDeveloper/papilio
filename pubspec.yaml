@@ -14,7 +14,8 @@ dependencies:
     sdk: flutter
   ioc_container: ^0.6.0
   meta: ^1.7.0
-
+  papilio_bloc:
+    path: ../papilio_bloc
 
 dev_dependencies:
   dart_code_metrics: ^4.16.0

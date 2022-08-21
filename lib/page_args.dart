@@ -1,10 +1,7 @@
 library papilio;
 
-import "package:flutter/material.dart";
-import "package:papilio_bloc/bloc.dart";
-
 import 'package:flutter/material.dart';
-import 'package:papilio/bloc.dart';
+import 'package:papilio_bloc/bloc.dart';
 
 ///Holds details about the page for the route
 class PageArgs<TBloc> {
