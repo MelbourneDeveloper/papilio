@@ -12,9 +12,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter:
     sdk: flutter
-
-  papilio:
-    path: ../../papilio
+  papilio: ^0.9.0-beta
 
 dev_dependencies:
   flutter_lints: ^2.0.0

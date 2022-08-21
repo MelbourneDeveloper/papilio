@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
 ///Resend the current state to trigger a rebuild. This is the
 ///equivalent of setState
@@ -9,7 +9,15 @@ class RebuildEvent extends BlocEvent {}
 
 ///Business Logic Component
 class Bloc<T> {
-  bool isDisposed = false;
+  ///You can construct a Bloc here, but you're probably better off using a
+  ///BlocBuilder
+  Bloc(
+    this.initialState,
+    this._handlersByEvent,
+    this._syncHandlersByEvent, {
+    this.pageScope,
+  }) : _state = initialState;
+  bool _isDisposed = false;
 
   ///The current state of the bloc
   T _state;
@@ -37,13 +45,6 @@ class Bloc<T> {
   ///Put short lived objected that need disposal here
   final Object? pageScope;
 
-  Bloc(
-    this.initialState,
-    this._handlersByEvent,
-    this._syncHandlersByEvent, {
-    this.pageScope,
-  }) : _state = initialState;
-
   String _unhandledErrorMessage(BlocEvent event) =>
       'There is no handler for the type ${event.runtimeType}';
 
@@ -52,7 +53,7 @@ class Bloc<T> {
 
   ///Send an async event to the bloc
   Future<void> addEvent(BlocEvent event) async {
-    if (isDisposed) {
+    if (_isDisposed) {
       return;
     }
     _state = await _executeHandler(() => _state, event, _updateState);
@@ -63,7 +64,7 @@ class Bloc<T> {
 
   ///Send a synchronous event to the bloc
   T addEventSync<Tb extends BlocEvent>(Tb event) {
-    if (isDisposed) {
+    if (_isDisposed) {
       return _state;
     }
 
@@ -77,22 +78,22 @@ class Bloc<T> {
 
   ///Close the stream
   void dispose() {
-    isDisposed = true;
-    //TODO: Perhaps we should do something with the return result here?
+    _isDisposed = true;
+    // TODO(): Perhaps we should do something with the return result here?
     //ignore: avoid-ignoring-return-values
     _streamController.close();
   }
 
   void _updateState(T state) {
-    if (isDisposed) {
+    if (_isDisposed) {
       return;
     }
 
     _state = state;
-    _streamController.sink.add(Snapshot(state, addEvent, addEventSync));
+    _streamController.sink.add(Snapshot<T>(state, addEvent, addEventSync));
   }
 
-  T _executeHandlerSync(T state, BlocEvent event) {
+  T _executeHandlerSync(T state, final BlocEvent event) {
     if (_syncHandlersByEvent.containsKey(event.runtimeType)) {
       return _syncHandlersByEvent[event.runtimeType]!(state, event);
     }
@@ -119,20 +120,37 @@ class Bloc<T> {
 ///A snapshot of the state from the stream with the ability to send events to
 ///the Bloc
 class Snapshot<T> {
+  ///Creates a snapshot
+  Snapshot(this.state, this.sendEvent, this.sendEventSync);
+
+  ///The current state of the bloc
   final T state;
+
+  ///Send an async event to the bloc
   final Future<void> Function(BlocEvent event) sendEvent;
 
+  ///Send a synchronous event to the bloc
   final void Function<Tb extends BlocEvent>(Tb event) sendEventSync;
-
-  Snapshot(this.state, this.sendEvent, this.sendEventSync);
 }
 
 @immutable
-class BlocEvent {
+
+///An event that can be sent to the bloc
+abstract class BlocEvent {
+  ///The base class for all events
   const BlocEvent();
 }
 
+@immutable
+
+///Builds Blocs. You should use this instead of constructing a Bloc directly
+///Use [addHandler] to handle async events and [addSyncHandler] to handle
+///synchronous events
 class BlocBuilder<T> {
+  ///Creates a BlocBuilder with an initial state
+  BlocBuilder(this.initialState);
+
+  ///The state of the Bloc upon initialization
   final T Function(Object? arguments) initialState;
 
   ///Sync handlers as a map by type
@@ -147,8 +165,6 @@ class BlocBuilder<T> {
     void Function(T) updateState,
     Object? pageScope,
   )> _handlersByEvent = {};
-
-  BlocBuilder(this.initialState);
 
   ///Add an async Bloc event handler.
   ///getState gets the current Bloc state. Because this function is async, the
