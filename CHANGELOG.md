@@ -23,3 +23,5 @@ dart pub publish
 - Add documentation to all public members and fix a bunch of analysis issues.
 ## 0.10.0-beta
 - Rerelease due to some apparent code analysis issues at pub.dev
+## 0.11.0-beta
+- Fix the isInitialized TODO and break up some large functions
