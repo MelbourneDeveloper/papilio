@@ -1,5 +1,3 @@
-library papilio;
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ioc_container/ioc_container.dart';

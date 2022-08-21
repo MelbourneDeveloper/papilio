@@ -1,5 +1,3 @@
-library papilio;
-
 import 'package:flutter/material.dart';
 import 'package:ioc_container/ioc_container.dart';
 import 'package:papilio/papilio_route_information_parser.dart';
