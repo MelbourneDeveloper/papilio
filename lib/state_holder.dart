@@ -15,7 +15,7 @@ class StateHolder<T> extends InheritedWidget {
   ///The current state
   final T state;
 
-  // ignore: public_member_api_docs
+  ///Gets the current state from the [BuildContext]
   static StateHolder<T> of<T>(BuildContext context) {
     final result = context.dependOnInheritedWidgetOfExactType<StateHolder<T>>();
     assert(result != null, 'No state of type $T found in context');
