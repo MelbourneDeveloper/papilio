@@ -20,9 +20,6 @@ class StateHolder<T> extends InheritedWidget {
     final result = context.dependOnInheritedWidgetOfExactType<StateHolder<T>>();
     assert(result != null, 'No state of type $T found in context');
 
-    // ignore: unused_local_variable
-    const test = 'asd';
-
     return result!;
   }
 
